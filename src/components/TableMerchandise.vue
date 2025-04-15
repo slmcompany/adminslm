@@ -5,19 +5,6 @@
       <a-row :gutter="[16, 16]" align="middle" class="mb-3">
         <a-col :span="12" :md="8" :lg="6">
           <a-select
-            v-model:value="selectedGroup"
-            style="width: 100%"
-            placeholder="Chọn nhóm vật tư"
-            @change="handleGroupChange"
-          >
-            <a-select-option value="all">Tất cả nhóm vật tư</a-select-option>
-            <a-select-option v-for="group in productGroups" :key="group.code" :value="group.code">
-              {{ group.name }}
-            </a-select-option>
-          </a-select>
-        </a-col>
-        <a-col :span="12" :md="8" :lg="6">
-          <a-select
             v-model:value="selectedBrand"
             style="width: 100%"
             placeholder="Chọn thương hiệu"
@@ -38,15 +25,10 @@
             allow-clear
           />
         </a-col>
-        <a-col :span="24" :md="24" :lg="6" class="text-right">
+        <a-col :span="24" :md="24" :lg="12" class="text-right">
           <a-tag v-if="filteredData.length">Hiển thị {{ filteredData.length }} mục</a-tag>
         </a-col>
       </a-row>
-    </div>
-
-    <!-- Group title if a specific group is selected -->
-    <div v-if="selectedGroup !== 'all'" class="group-title-section mb-2">
-      <h3 class="group-title">{{ getGroupNameByCode(selectedGroup) }}</h3>
     </div>
 
     <!-- Table data -->
@@ -130,7 +112,7 @@ const jsonModalVisible = ref(false)
 const jsonTableData = ref([])
 const isLoading = ref(false)
 const searchKeyword = ref('')
-const selectedGroup = ref(props.defaultGroup)
+const selectedGroup = ref(props.defaultGroup || 'all')
 const selectedBrand = ref('all')
 
 // Pagination config
@@ -138,25 +120,9 @@ const tablePagination = {
   pageSize: 10,
   showSizeChanger: true,
   pageSizeOptions: ['10', '20', '50', '100'],
-  showTotal: (total) => `Tổng số ${total} mục`
-}
-
-// Product groups definition
-const productGroups = [
-  { code: 'PIN_PV', name: 'Tấm pin PV' },
-  { code: 'INVERTER_DC_AC', name: 'Biến tần' },
-  { code: 'BATTERY_STORAGE', name: 'Pin lưu trữ' },
-  { code: 'ALUMINUM_FRAME', name: 'Hệ khung nhôm' },
-  { code: 'DC_AC_CABLE', name: 'Dây điện' },
-  { code: 'SOLAR_PANEL_CABINET', name: 'Tủ điện' },
-  { code: 'GROUNDING_SYSTEM', name: 'Hệ tiếp địa' },
-  { code: 'INSTALLATION_PACKAGE', name: 'Gói lắp đặt' }
-]
-
-// Get group name by code
-const getGroupNameByCode = (code) => {
-  const group = productGroups.find(g => g.code === code)
-  return group ? group.name : 'Không xác định'
+  showTotal: (total) => `Tổng số ${total} mục`,
+  position: ['bottomCenter'],
+  className: 'centered-pagination'
 }
 
 // Unique brands list for filter
@@ -175,7 +141,7 @@ const uniqueBrands = computed(() => {
 const filteredData = computed(() => {
   let filtered = [...localMerchandises.value]
 
-  // Filter by group
+  // Filter by group (based on defaultGroup prop)
   if (selectedGroup.value !== 'all') {
     filtered = filtered.filter(item =>
       item.template && item.template.code === selectedGroup.value
@@ -253,13 +219,6 @@ const showJsonModal = (jsonData) => {
 }
 
 // Event handlers
-const handleGroupChange = (value) => {
-  selectedGroup.value = value
-  // Reset other filters when changing group
-  selectedBrand.value = 'all'
-  searchKeyword.value = ''
-}
-
 const handleFiltersChange = () => {
   // This is a placeholder for any additional actions needed when filters change
   // Currently the computed property handles the filtering automatically
@@ -273,34 +232,16 @@ const columns = [
     width: 80,
   },
   {
-    title: 'Nhóm vật tư',
-    dataIndex: ['template', 'name'],
-    key: 'template',
-    width: 150,
+    title: 'Tên sản phẩm',
+    dataIndex: 'name',
+    key: 'name',
+    width: 200,
   },
   {
     title: 'Thương hiệu',
     dataIndex: ['brand', 'name'],
     key: 'brand',
     width: 150,
-  },
-  {
-    title: 'Nhà cung cấp',
-    dataIndex: ['supplier', 'name'],
-    key: 'supplier',
-    width: 150,
-  },
-  {
-    title: 'Mã sản phẩm',
-    dataIndex: 'code',
-    key: 'code',
-    width: 150,
-  },
-  {
-    title: 'Tên sản phẩm',
-    dataIndex: 'name',
-    key: 'name',
-    width: 200,
   },
   {
     title: 'Link thông tin',
@@ -572,8 +513,29 @@ thead {
 
 <style scoped>
 .merchandise-table-container {
-  width: 100%;
+  width: 100% !important;
+  max-width: 100% !important;
   box-sizing: border-box;
+}
+
+:deep(.ant-table) {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+:deep(.ant-table-wrapper) {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+:deep(.ant-table-content) {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+:deep(.ant-spin-container) {
+  width: 100% !important;
+  max-width: 100% !important;
 }
 
 .filter-section {
@@ -582,6 +544,18 @@ thead {
   margin-bottom: 16px;
   border-radius: 4px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+:deep(.ant-row) {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+:deep(.ant-col) {
+  width: 100% !important;
+  max-width: 100% !important;
 }
 
 .filter-row {
@@ -589,6 +563,7 @@ thead {
   flex-wrap: wrap;
   gap: 12px;
   margin-bottom: 12px;
+  width: 100%;
 }
 
 .filter-item {
@@ -601,6 +576,7 @@ thead {
   border-radius: 4px;
   overflow: hidden;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  width: 100%;
 }
 
 /* Table styles */
@@ -636,6 +612,15 @@ thead {
 :deep(.ant-table-cell) {
   white-space: normal;
   word-break: break-word;
+}
+
+/* Force full width on the table header */
+:deep(.ant-table-header) {
+  width: 100% !important;
+}
+
+:deep(.ant-table-body) {
+  width: 100% !important;
 }
 
 /* Responsive adjustments */
@@ -677,5 +662,24 @@ thead {
   .text-right {
     text-align: left;
   }
+}
+
+/* Centered pagination */
+:deep(.centered-pagination) {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 16px 0;
+}
+
+:deep(.ant-pagination) {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 16px;
+}
+
+:deep(.ant-pagination-options) {
+  margin-left: 16px;
 }
 </style>

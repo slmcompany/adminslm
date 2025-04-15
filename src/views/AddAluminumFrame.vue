@@ -2,16 +2,16 @@
   <a-layout-content class="add-aluminum-frame">
     <a-row :gutter="[16, 16]">
       <a-col :span="24">
-        <a-card title="Tạo hệ khung nhôm">
-          <a-button type="primary" @click="showDrawer">
-            <template #icon><PlusOutlined /></template>
-            Tạo hệ khung nhôm mới
-          </a-button>
-        </a-card>
-      </a-col>
-
-      <a-col :span="24">
-        <a-card title="Danh sách vật tư">
+        <a-card>
+          <template #title>
+            <div class="card-title-container">
+              <span>Danh sách hệ khung nhôm</span>
+              <a-button type="primary" @click="showDrawer">
+                <template #icon><PlusOutlined /></template>
+                Tạo hệ khung nhôm mới
+              </a-button>
+            </div>
+          </template>
           <TableMerchandise :merchandises="merchandises" defaultGroup="ALUMINUM_FRAME" />
         </a-card>
       </a-col>
@@ -23,7 +23,8 @@
       :closable="false"
       :visible="visible"
       @close="onClose"
-      width="720"
+      width="520"
+      class="compact-drawer"
     >
       <a-form :model="formState" layout="vertical">
         <a-form-item label="Chọn thương hiệu">
@@ -115,7 +116,6 @@
 <script setup>
 import TableMerchandise from '@/components/TableMerchandise.vue'
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
 import { PlusOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 
@@ -140,8 +140,6 @@ const warranty_years = ref(0)
 const begin_price = ref(0)
 const merchandises = ref([])
 const description_in_quotation = ref('')
-
-const route = useRoute()
 
 const loadBrands = async () => {
   try {
@@ -235,6 +233,18 @@ const removeImage = (index) => {
 <style scoped>
 .add-aluminum-frame {
   padding: 24px;
+}
+
+.card-title-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.card-title-container span {
+  font-size: 16px;
+  font-weight: 500;
 }
 
 .image-input {

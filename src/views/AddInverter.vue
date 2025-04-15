@@ -2,11 +2,17 @@
   <a-layout-content class="add-inverter">
     <a-row :gutter="[16, 16]">
       <a-col :span="24">
-        <a-card title="Tạo biến tần">
-          <a-button type="primary" @click="showDrawer">
-            <template #icon><PlusOutlined /></template>
-            Tạo biến tần mới
-          </a-button>
+        <a-card>
+          <template #title>
+            <div class="card-title-container">
+              <span>Danh sách biến tần</span>
+              <a-button type="primary" @click="showDrawer">
+                <template #icon><PlusOutlined /></template>
+                Tạo biến tần mới
+              </a-button>
+            </div>
+          </template>
+          <TableMerchandise :merchandises="merchandises" defaultGroup="INVERTER_DC_AC" />
         </a-card>
       </a-col>
     </a-row>
@@ -17,7 +23,8 @@
       :closable="false"
       :visible="visible"
       @close="onClose"
-      width="720"
+      width="520"
+      class="compact-drawer"
     >
       <a-form :model="formState" layout="vertical">
         <a-form-item label="Chọn thương hiệu">
@@ -191,14 +198,6 @@
         </a-form-item>
       </a-form>
     </a-drawer>
-
-    <a-row :gutter="[16, 16]" style="margin-top: 24px">
-      <a-col :span="24">
-        <a-card title="Danh sách vật tư">
-          <TableMerchandise :merchandises="merchandises" defaultGroup="INVERTER_DC_AC" />
-        </a-card>
-      </a-col>
-    </a-row>
   </a-layout-content>
 </template>
 
@@ -339,5 +338,17 @@ const removeImage = (index) => {
 <style scoped>
 .add-inverter {
   padding: 24px;
+}
+
+.card-title-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.card-title-container span {
+  font-size: 16px;
+  font-weight: 500;
 }
 </style>

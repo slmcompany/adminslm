@@ -1,7 +1,11 @@
 <template>
-  <div class="h-full flex flex-col bg-[#1F2937] w-full">
+  <div
+    class="h-full flex flex-col bg-[#1F2937] w-full sidebar-container"
+    @mouseenter="onMouseEnter"
+    @mouseleave="onMouseLeave"
+  >
     <div class="p-4 border-b border-gray-700 w-full">
-      <h2 class="text-2xl font-bold text-[#FF0000]" v-if="!collapsed">SLM</h2>
+      <h2 class="text-2xl font-bold text-[#FF0000]" v-if="!localCollapsed">SLM</h2>
       <h2 class="text-2xl font-bold text-[#FF0000]" v-else>S</h2>
     </div>
     <a-menu
@@ -9,7 +13,7 @@
       theme="dark"
       class="flex-1 custom-dark-menu w-full"
       :selectedKeys="[route.name]"
-      :inline-collapsed="collapsed"
+      :inline-collapsed="localCollapsed"
     >
       <a-menu-item key="dashboard" class="w-full">
         <template #icon><DashboardOutlined /></template>
@@ -109,20 +113,12 @@
         <span>Quản lý tệp và thư mục</span>
       </a-menu-item>
     </a-menu>
-    <div class="p-4 border-t border-gray-700 w-full">
-      <a-button type="text" @click="$emit('update:collapsed', !collapsed)" class="w-full text-gray-400 hover:text-white">
-        <template #icon>
-          <MenuFoldOutlined v-if="!collapsed" />
-          <MenuUnfoldOutlined v-else />
-        </template>
-        <span v-if="!collapsed">Thu gọn menu</span>
-      </a-button>
-    </div>
   </div>
 </template>
 
 <script setup>
 import { useRoute } from 'vue-router'
+import { ref, watch } from 'vue'
 import {
   DashboardOutlined,
   ShoppingOutlined,
@@ -133,28 +129,50 @@ import {
   FileAddOutlined,
   FileOutlined,
   EditOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
   FileTextOutlined
 } from '@ant-design/icons-vue'
 
-defineProps({
+const props = defineProps({
   collapsed: {
     type: Boolean,
     default: false
   }
 })
 
-defineEmits(['update:collapsed'])
+const emit = defineEmits(['update:collapsed'])
 
 const route = useRoute()
+const localCollapsed = ref(props.collapsed)
+
+// Sync localCollapsed with props.collapsed
+watch(() => props.collapsed, (newValue) => {
+  localCollapsed.value = newValue
+})
+
+// Sync props.collapsed with localCollapsed
+watch(localCollapsed, (newValue) => {
+  emit('update:collapsed', newValue)
+})
+
+const onMouseEnter = () => {
+  localCollapsed.value = false
+}
+
+const onMouseLeave = () => {
+  localCollapsed.value = true
+}
 </script>
 
 <style scoped>
+.sidebar-container {
+  transition: width 0.3s ease;
+}
+
 .custom-dark-menu {
   background-color: #1F2937;
   border-right: none !important;
   width: 100% !important;
+  transition: all 0.3s ease;
 }
 
 .custom-dark-menu :deep(.ant-menu-item) {
