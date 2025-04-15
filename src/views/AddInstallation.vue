@@ -2,11 +2,17 @@
   <a-layout-content class="add-installation">
     <a-row :gutter="[16, 16]">
       <a-col :span="24">
-        <a-card title="Tạo gói lắp đặt">
-          <a-button type="primary" @click="showDrawer">
-            <template #icon><PlusOutlined /></template>
-            Tạo gói lắp đặt mới
-          </a-button>
+        <a-card>
+          <template #title>
+            <div class="card-title-container">
+              <span>Danh sách gói lắp đặt</span>
+              <a-button type="primary" @click="showDrawer">
+                <template #icon><PlusOutlined /></template>
+                Tạo gói lắp đặt mới
+              </a-button>
+            </div>
+          </template>
+          <TableMerchandise :merchandises="merchandises" defaultGroup="INSTALLATION_PACKAGE" />
         </a-card>
       </a-col>
     </a-row>
@@ -17,7 +23,8 @@
       :closable="false"
       :visible="visible"
       @close="onClose"
-      width="720"
+      width="520"
+      class="compact-drawer"
     >
       <a-form :model="formState" layout="vertical">
         <a-form-item label="Chọn thương hiệu">
@@ -64,48 +71,44 @@
         </a-form-item>
 
         <a-form-item label="Ảnh">
-          <a-space direction="vertical" style="width: 100%">
-            <div v-for="(image, index) in images" :key="index" style="margin-bottom: 8px">
-              <a-space>
-                <a-input
-                  v-model:value="images[index]"
-                  :placeholder="'Ảnh ' + (index + 1)"
-                  style="width: 300px"
-                />
-                <a-button type="link" danger @click="removeImage(index)">Xóa</a-button>
-              </a-space>
-            </div>
-            <a-button type="dashed" @click="addImageInput" block>
-              <template #icon><PlusOutlined /></template>
-              Thêm ảnh
-            </a-button>
-          </a-space>
+          <div v-for="(image, index) in images" :key="index" class="image-input">
+            <a-input
+              v-model:value="images[index]"
+              :placeholder="'Ảnh ' + (index + 1)"
+              style="margin-bottom: 8px"
+            />
+            <a-button type="link" danger @click="removeImage(index)">Xóa</a-button>
+          </div>
+          <a-button type="dashed" @click="addImageInput" block>
+            <template #icon><PlusOutlined /></template>
+            Thêm ảnh
+          </a-button>
         </a-form-item>
 
         <a-form-item label="Công suất áp dụng">
-          <a-space direction="vertical" style="width: 100%">
-            <a-space>
-              <span>Từ:</span>
-              <a-input-number
-                v-model:value="from_power_kwp"
-                :min="0"
-                placeholder="Từ"
-                style="width: 120px"
-              />
-              <span>kWp</span>
-            </a-space>
-            <a-space>
-              <span>Đến:</span>
-              <a-input-number
-                v-model:value="to_power_kwp"
-                :min="0"
-                placeholder="Đến"
-                style="width: 120px"
-              />
-              <span>kWp</span>
-              <a-button type="link" @click="getMaxToPower">Lấy tối đa</a-button>
-            </a-space>
-          </a-space>
+          <a-row :gutter="16">
+            <a-col :span="12">
+              <a-form-item label="Từ (kWp)">
+                <a-input-number
+                  v-model:value="from_power_kwp"
+                  placeholder="Từ"
+                  :min="0"
+                  style="width: 100%"
+                />
+              </a-form-item>
+            </a-col>
+            <a-col :span="12">
+              <a-form-item label="Đến (kWp)">
+                <a-input-number
+                  v-model:value="to_power_kwp"
+                  placeholder="Đến"
+                  :min="0"
+                  style="width: 100%"
+                />
+              </a-form-item>
+            </a-col>
+          </a-row>
+          <a-button type="link" @click="getMaxToPower">Lấy tối đa</a-button>
         </a-form-item>
 
         <a-form-item label="Khởi tạo giá">
@@ -121,14 +124,6 @@
         </a-form-item>
       </a-form>
     </a-drawer>
-
-    <a-row :gutter="[16, 16]" style="margin-top: 24px">
-      <a-col :span="24">
-        <a-card title="Danh sách vật tư">
-          <TableMerchandise :merchandises="merchandises" defaultGroup="INSTALLATION_PACKAGE" />
-        </a-card>
-      </a-col>
-    </a-row>
   </a-layout-content>
 </template>
 
@@ -256,5 +251,47 @@ const removeImage = (index) => {
 <style scoped>
 .add-installation {
   padding: 24px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.card-title-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.card-title-container span {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+:deep(.ant-card) {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+:deep(.ant-card-body) {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+:deep(.ant-col) {
+  width: 100%;
+}
+
+:deep(.ant-row) {
+  width: 100%;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.image-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
 }
 </style>

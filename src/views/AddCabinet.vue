@@ -2,16 +2,16 @@
   <a-layout-content class="add-cabinet">
     <a-row :gutter="[16, 16]">
       <a-col :span="24">
-        <a-card title="Tạo tủ điện">
-          <a-button type="primary" @click="showDrawer">
-            <template #icon><PlusOutlined /></template>
-            Tạo tủ điện mới
-          </a-button>
-        </a-card>
-      </a-col>
-
-      <a-col :span="24">
-        <a-card title="Danh sách vật tư">
+        <a-card>
+          <template #title>
+            <div class="card-title-container">
+              <span>Danh sách tủ điện</span>
+              <a-button type="primary" @click="showDrawer">
+                <template #icon><PlusOutlined /></template>
+                Tạo tủ điện mới
+              </a-button>
+            </div>
+          </template>
           <TableMerchandise :merchandises="merchandises" defaultGroup="SOLAR_PANEL_CABINET" />
         </a-card>
       </a-col>
@@ -23,7 +23,8 @@
       :closable="false"
       :visible="visible"
       @close="onClose"
-      width="720"
+      width="520"
+      class="compact-drawer"
     >
       <a-form :model="formState" layout="vertical">
         <a-form-item label="Chọn thương hiệu">
@@ -272,11 +273,47 @@ onMounted(async () => {
 <style scoped>
 .add-cabinet {
   padding: 24px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.card-title-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.card-title-container span {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+:deep(.ant-card) {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+:deep(.ant-card-body) {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+:deep(.ant-col) {
+  width: 100%;
+}
+
+:deep(.ant-row) {
+  width: 100%;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 
 .image-input {
   display: flex;
   align-items: center;
   gap: 8px;
+  width: 100%;
 }
 </style>
