@@ -1,9 +1,13 @@
 <script setup>
-import { RouterView, useRoute } from 'vue-router'
+import { RouterView, useRoute, useRouter } from 'vue-router'
 import SideBar from './components/SideBar.vue';
+import BreadcrumbNav from './components/BreadcrumbNav.vue';
 import { ref, computed } from 'vue'
+import { useAuthStore } from './stores/auth'
 
 const route = useRoute();
+const router = useRouter();
+const authStore = useAuthStore();
 const collapsed = ref(false)
 
 const onCollapse = (val) => {
@@ -11,7 +15,38 @@ const onCollapse = (val) => {
 }
 
 const showSidebar = computed(() => {
-  return route.name !== 'policy-and-privacy'
+  return route.name !== 'policy-and-privacy' && route.name !== 'login' && authStore.isAuthenticated && authStore.isAdmin
+})
+
+const logout = () => {
+  authStore.logout()
+  router.push('/login')
+}
+
+const shouldShowBreadcrumb = computed(() => {
+  return route.name !== 'login' && authStore.isAuthenticated
+})
+
+// Tiêu đề trang
+const pageTitles = {
+  'home': 'Tổng quan',
+  'add-pin-pv': 'Thêm tấm pin PV',
+  'add-inverter': 'Thêm biến tần',
+  'add-battery': 'Thêm pin lưu trữ',
+  'add-aluminum-frame': 'Thêm hệ khung nhôm',
+  'add-cable': 'Thêm dây điện',
+  'add-cabinet': 'Thêm tủ điện',
+  'add-grounding-system': 'Thêm hệ tiếp địa',
+  'add-installation': 'Thêm gói lắp đặt',
+  'combo-create': 'Tạo Combo',
+  'contract-create': 'Tạo Hợp đồng mới',
+  'contract-create-old': 'Tạo Hợp đồng cũ',
+  'add-content': 'Tạo nội dung',
+  'policy-and-privacy': 'Chính sách và quyền riêng tư'
+}
+
+const pageTitle = computed(() => {
+  return pageTitles[route.name] || ''
 })
 </script>
 
@@ -30,18 +65,40 @@ const showSidebar = computed(() => {
     </a-layout-sider>
 
     <a-layout class="w-full" :style="{ marginLeft: showSidebar ? (collapsed ? '80px' : '250px') : '0', padding: 0 }">
-      <a-layout-header class="bg-white px-5 shadow-md sticky top-0 z-5 w-full" style="padding-left: 16px; padding-right: 16px;">
-        <!-- Header content can be added here -->
+      <!-- Header with page title -->
+      <a-layout-header
+        v-if="authStore.isAuthenticated"
+        class="bg-white px-5 shadow-md sticky top-0 z-5 w-full"
+        style="padding-left: 16px; padding-right: 16px;"
+      >
+        <div class="w-full flex justify-between items-center">
+          <div class="text-lg font-semibold">
+            {{ pageTitle }}
+          </div>
+        </div>
       </a-layout-header>
 
-      <a-layout-content class="bg-[#f0f2f5] min-h-[calc(100vh-64px-70px)] w-full">
-        <div class="w-full max-w-full mx-auto">
+      <!-- Breadcrumb navigation with user info and logout -->
+      <div class="breadcrumb-bar" v-if="shouldShowBreadcrumb">
+        <div class="breadcrumb-container">
+          <BreadcrumbNav />
+        </div>
+        <div class="user-controls">
+          <span v-if="authStore.user" class="user-greeting">Xin chào, {{ authStore.user.name }}</span>
+          <a-button type="primary" danger size="middle" @click="logout">
+            Đăng xuất
+          </a-button>
+        </div>
+      </div>
+
+      <a-layout-content class="bg-[#f0f2f5] min-h-[calc(100vh-64px-48px)] w-full overflow-x-hidden">
+        <div class="w-full max-w-full mx-auto px-4 py-4">
           <RouterView />
         </div>
       </a-layout-content>
 
-      <a-layout-footer class="bg-white text-center py-4 w-full" style="padding-left: 0; padding-right: 0;">
-        <!-- Footer content can be added here -->
+      <a-layout-footer v-if="authStore.isAuthenticated" class="bg-white text-center py-3 w-full" style="padding-left: 0; padding-right: 0;">
+        SLM Solar Admin © {{ new Date().getFullYear() }}
       </a-layout-footer>
     </a-layout>
   </a-layout>
@@ -84,6 +141,7 @@ body {
 .ant-layout-header {
   padding-left: 16px !important;
   padding-right: 16px !important;
+  height: 64px !important;
 }
 
 .ant-layout-footer {
@@ -91,5 +149,40 @@ body {
   padding-right: 0 !important;
 }
 
-/* Remove all custom CSS as we're using Tailwind now */
+/* Breadcrumb and user info styles */
+.breadcrumb-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: white;
+  border-bottom: 1px solid #e8e8e8;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.breadcrumb-container {
+  flex: 1;
+  overflow-x: auto;
+  min-width: 0; /* Để breadcrumb co lại khi cần */
+  padding-right: 8px;
+}
+
+.user-controls {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  margin-left: 12px;
+  flex-shrink: 0; /* Ngăn user controls co lại */
+}
+
+.user-greeting {
+  margin-right: 12px;
+}
+
+@media (max-width: 640px) {
+  .user-greeting {
+    display: none;
+  }
+}
 </style>

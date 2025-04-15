@@ -10,9 +10,9 @@
         </a-card>
       </a-col>
 
-      <a-col :span="24" class="w-full">
-        <a-card title="Danh sách vật tư" class="w-full">
-          <TableMerchandise :merchandises="merchandises" />
+      <a-col :span="24">
+        <a-card title="Danh sách vật tư">
+          <TableMerchandise :merchandises="merchandises" defaultGroup="BATTERY_STORAGE" />
         </a-card>
       </a-col>
     </a-row>

@@ -1,62 +1,205 @@
 <template>
-  <a-table
-    :columns="columns"
-    :data-source="localMerchandises"
-    :scroll="{ x: 1500, y: 600 }"
-    :pagination="false"
-    bordered
-    size="middle"
-  >
-    <template #bodyCell="{ column, text }">
-      <template v-if="column.key === 'data_sheet_link'">
-        <a :href="text" target="_blank" v-if="text && text.trim() !== ''">Click để xem</a>
-        <span v-else>-</span>
-      </template>
-      <template v-else-if="column.key === 'data_json'">
-        <a-button type="link" size="small" @click="showJsonModal(text)">Xem chi tiết</a-button>
-      </template>
-      <template v-else-if="column.key === 'created_at'">
-        {{ formatDate(text) }}
-      </template>
-      <template v-else>
-        {{ text }}
-      </template>
-    </template>
-  </a-table>
+  <div class="merchandise-table-container">
+    <!-- Filter controls -->
+    <div class="filter-section mb-4">
+      <a-row :gutter="[16, 16]" align="middle" class="mb-3">
+        <a-col :span="12" :md="8" :lg="6">
+          <a-select
+            v-model:value="selectedGroup"
+            style="width: 100%"
+            placeholder="Chọn nhóm vật tư"
+            @change="handleGroupChange"
+          >
+            <a-select-option value="all">Tất cả nhóm vật tư</a-select-option>
+            <a-select-option v-for="group in productGroups" :key="group.code" :value="group.code">
+              {{ group.name }}
+            </a-select-option>
+          </a-select>
+        </a-col>
+        <a-col :span="12" :md="8" :lg="6">
+          <a-select
+            v-model:value="selectedBrand"
+            style="width: 100%"
+            placeholder="Chọn thương hiệu"
+            @change="handleFiltersChange"
+          >
+            <a-select-option value="all">Tất cả thương hiệu</a-select-option>
+            <a-select-option v-for="brand in uniqueBrands" :key="brand.id" :value="brand.id">
+              {{ brand.name }}
+            </a-select-option>
+          </a-select>
+        </a-col>
+        <a-col :span="24" :md="8" :lg="6">
+          <a-input-search
+            v-model:value="searchKeyword"
+            placeholder="Tìm kiếm theo tên, mã sản phẩm"
+            @change="handleFiltersChange"
+            @search="handleFiltersChange"
+            allow-clear
+          />
+        </a-col>
+        <a-col :span="24" :md="24" :lg="6" class="text-right">
+          <a-tag v-if="filteredData.length">Hiển thị {{ filteredData.length }} mục</a-tag>
+        </a-col>
+      </a-row>
+    </div>
 
-  <!-- Modal for JSON data -->
-  <a-modal
-    v-model:visible="jsonModalVisible"
-    title="Thông tin tuỳ biến"
-    :footer="null"
-    width="700px"
-  >
+    <!-- Group title if a specific group is selected -->
+    <div v-if="selectedGroup !== 'all'" class="group-title-section mb-2">
+      <h3 class="group-title">{{ getGroupNameByCode(selectedGroup) }}</h3>
+    </div>
+
+    <!-- Table data -->
     <a-table
-      :dataSource="jsonTableData"
-      :columns="jsonColumns"
-      :pagination="false"
-      size="small"
+      :columns="columns"
+      :data-source="filteredData"
+      :scroll="{ x: 1500, y: 600 }"
+      :pagination="tablePagination"
       bordered
-    />
-  </a-modal>
+      size="middle"
+      :row-key="record => record.id"
+      :loading="isLoading"
+    >
+      <template #bodyCell="{ column, text, record }">
+        <template v-if="column.key === 'data_sheet_link'">
+          <a :href="text" target="_blank" v-if="text && text.trim() !== ''">Click để xem</a>
+          <span v-else>-</span>
+        </template>
+        <template v-else-if="column.key === 'data_json'">
+          <a-button type="link" size="small" @click="showJsonModal(text)">Xem chi tiết</a-button>
+        </template>
+        <template v-else-if="column.key === 'created_at'">
+          {{ formatDate(text) }}
+        </template>
+        <template v-else-if="column.key === 'active'">
+          <a-tag :color="record.active ? 'green' : 'red'">
+            {{ record.active ? 'Có' : 'Không' }}
+          </a-tag>
+        </template>
+        <template v-else>
+          {{ text }}
+        </template>
+      </template>
+      <template #emptyText>
+        <div class="empty-data">
+          <p>Không có dữ liệu</p>
+        </div>
+      </template>
+    </a-table>
+
+    <!-- Modal for JSON data -->
+    <a-modal
+      v-model:visible="jsonModalVisible"
+      title="Thông tin tuỳ biến"
+      :footer="null"
+      width="700px"
+    >
+      <a-table
+        :dataSource="jsonTableData"
+        :columns="jsonColumns"
+        :pagination="false"
+        size="small"
+        bordered
+      />
+    </a-modal>
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { message } from 'ant-design-vue'
 // const CONST_HOST = "http://localhost:8080"
 const CONST_HOST = "https://id.slmsolar.com"
+
 const props = defineProps({
     merchandises: {
         type: Array,
         required: false,
         default: () => []
+    },
+    defaultGroup: {
+        type: String,
+        required: false,
+        default: 'all'
     }
 })
 
+// State variables
 const localMerchandises = ref([])
 const jsonModalVisible = ref(false)
 const jsonTableData = ref([])
+const isLoading = ref(false)
+const searchKeyword = ref('')
+const selectedGroup = ref(props.defaultGroup)
+const selectedBrand = ref('all')
+
+// Pagination config
+const tablePagination = {
+  pageSize: 10,
+  showSizeChanger: true,
+  pageSizeOptions: ['10', '20', '50', '100'],
+  showTotal: (total) => `Tổng số ${total} mục`
+}
+
+// Product groups definition
+const productGroups = [
+  { code: 'PIN_PV', name: 'Tấm pin PV' },
+  { code: 'INVERTER_DC_AC', name: 'Biến tần' },
+  { code: 'BATTERY_STORAGE', name: 'Pin lưu trữ' },
+  { code: 'ALUMINUM_FRAME', name: 'Hệ khung nhôm' },
+  { code: 'DC_AC_CABLE', name: 'Dây điện' },
+  { code: 'SOLAR_PANEL_CABINET', name: 'Tủ điện' },
+  { code: 'GROUNDING_SYSTEM', name: 'Hệ tiếp địa' },
+  { code: 'INSTALLATION_PACKAGE', name: 'Gói lắp đặt' }
+]
+
+// Get group name by code
+const getGroupNameByCode = (code) => {
+  const group = productGroups.find(g => g.code === code)
+  return group ? group.name : 'Không xác định'
+}
+
+// Unique brands list for filter
+const uniqueBrands = computed(() => {
+  const brands = localMerchandises.value
+    .map(item => item.brand)
+    .filter((brand, index, self) =>
+      brand && self.findIndex(b => b && b.id === brand.id) === index
+    )
+    .sort((a, b) => a.name.localeCompare(b.name))
+
+  return brands
+})
+
+// Filtered data based on selected filters
+const filteredData = computed(() => {
+  let filtered = [...localMerchandises.value]
+
+  // Filter by group
+  if (selectedGroup.value !== 'all') {
+    filtered = filtered.filter(item =>
+      item.template && item.template.code === selectedGroup.value
+    )
+  }
+
+  // Filter by brand
+  if (selectedBrand.value !== 'all') {
+    filtered = filtered.filter(item =>
+      item.brand && item.brand.id === selectedBrand.value
+    )
+  }
+
+  // Filter by search keyword
+  if (searchKeyword.value.trim()) {
+    const keyword = searchKeyword.value.toLowerCase().trim()
+    filtered = filtered.filter(item =>
+      (item.name && item.name.toLowerCase().includes(keyword)) ||
+      (item.code && item.code.toLowerCase().includes(keyword))
+    )
+  }
+
+  return filtered
+})
 
 // Columns for JSON data modal
 const jsonColumns = [
@@ -107,6 +250,19 @@ const showJsonModal = (jsonData) => {
 
   jsonTableData.value = tableData
   jsonModalVisible.value = true
+}
+
+// Event handlers
+const handleGroupChange = (value) => {
+  selectedGroup.value = value
+  // Reset other filters when changing group
+  selectedBrand.value = 'all'
+  searchKeyword.value = ''
+}
+
+const handleFiltersChange = () => {
+  // This is a placeholder for any additional actions needed when filters change
+  // Currently the computed property handles the filtering automatically
 }
 
 const columns = [
@@ -184,6 +340,7 @@ const columns = [
     dataIndex: 'active',
     key: 'active',
     width: 100,
+    align: 'center',
   }
 ]
 
@@ -211,40 +368,49 @@ const formatKey = (key) => {
 }
 
 const loadMerchandises = async () => {
-    try {
-        const response = await fetch(`${CONST_HOST}/api/json/merchandises`, {
-            method: 'GET',
-            credentials: 'include',
-        })
-        if (response.ok) {
-            const data = await response.json()
-            localMerchandises.value = data.items || []
-            console.log('Merchandises loaded successfully:', data)
-        } else {
-            message.error('Failed to load merchandises')
-        }
-    } catch (error) {
-        console.error('Error loading merchandises:', error)
-        message.error('Error loading merchandises')
+  isLoading.value = true
+  try {
+    const response = await fetch(`${CONST_HOST}/api/products`)
+    if (response.ok) {
+      const data = await response.json()
+      localMerchandises.value = data || []
+    } else {
+      message.error('Tải danh sách vật tư thất bại')
     }
+  } catch (error) {
+    console.error('Error loading merchandises:', error)
+    message.error('Có lỗi xảy ra khi tải dữ liệu')
+  } finally {
+    isLoading.value = false
+  }
 }
 
+// Watch for changes in props
 watch(
-    () => props.merchandises,
-    (newMerchandises) => {
-        if (newMerchandises && newMerchandises.length > 0) {
-            localMerchandises.value = newMerchandises
-        } else {
-            loadMerchandises()
-        }
-    },
-    { immediate: true }
+  () => props.merchandises,
+  (newMerchandises) => {
+    if (newMerchandises && newMerchandises.length > 0) {
+      localMerchandises.value = newMerchandises
+    } else {
+      loadMerchandises()
+    }
+  },
+  { immediate: true }
+)
+
+watch(
+  () => props.defaultGroup,
+  (newDefaultGroup) => {
+    if (newDefaultGroup) {
+      selectedGroup.value = newDefaultGroup
+    }
+  }
 )
 
 onMounted(() => {
-    if (!props.merchandises || props.merchandises.length === 0) {
-        loadMerchandises()
-    }
+  if (!props.merchandises || props.merchandises.length === 0) {
+    loadMerchandises()
+  }
 })
 </script>
 
@@ -401,5 +567,115 @@ thead {
 .excel-cell.selected {
     background-color: #e0ecff !important;
     border: 1px solid #0078d7;
+}
+</style>
+
+<style scoped>
+.merchandise-table-container {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.filter-section {
+  background-color: #fff;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.filter-item {
+  flex: 1;
+  min-width: 180px;
+}
+
+.table-section {
+  background-color: #fff;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Table styles */
+:deep(.ant-table-thead > tr > th) {
+  background-color: #f0f0f0;
+  font-weight: 600;
+  padding: 10px 16px;
+}
+
+:deep(.ant-table-tbody > tr > td) {
+  padding: 10px 16px;
+}
+
+:deep(.ant-table-tbody > tr:hover > td) {
+  background-color: #f5f5f5;
+}
+
+/* Modal styles */
+.json-modal {
+  width: 80%;
+  max-width: 1000px;
+}
+
+.json-content {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 8px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+/* Data cell content can wrap */
+:deep(.ant-table-cell) {
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .filter-item {
+    min-width: 100%;
+  }
+
+  .filter-row {
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .json-modal {
+    width: 95%;
+  }
+}
+
+.group-title {
+  margin: 0;
+  padding: 8px 0;
+  color: #1890ff;
+  font-size: 18px;
+  font-weight: 500;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.empty-data {
+  padding: 24px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.text-right {
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .text-right {
+    text-align: left;
+  }
 }
 </style>

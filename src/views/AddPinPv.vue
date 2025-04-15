@@ -12,7 +12,7 @@
 
       <a-col :span="24">
         <a-card title="Danh sách vật tư">
-          <TableMerchandise :merchandises="merchandises" />
+          <TableMerchandise :merchandises="merchandises" defaultGroup="PIN_PV" />
         </a-card>
       </a-col>
     </a-row>

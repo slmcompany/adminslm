@@ -124,7 +124,7 @@
     <a-row :gutter="[16, 16]" style="margin-top: 24px">
       <a-col :span="24">
         <a-card title="Danh sách vật tư">
-          <TableMerchandise :merchandises="merchandises" />
+          <TableMerchandise :merchandises="merchandises" defaultGroup="GROUNDING_SYSTEM" />
         </a-card>
       </a-col>
     </a-row>
