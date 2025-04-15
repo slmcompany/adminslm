@@ -6,12 +6,22 @@
 
 /* @import './base.css'; */
 
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
 #app {
   width: 100% !important;
   max-width: 100% !important;
   padding: 0;
   margin: 0;
   font-weight: normal;
+  height: 100%;
+  overflow: auto;
 }
 
 a,
@@ -54,4 +64,28 @@ a,
   margin-right: 0 !important;
   padding-left: 0 !important;
   padding-right: 0 !important;
+}
+
+/* Thay đổi màu nút primary từ xanh sang đỏ */
+.ant-btn-primary {
+  background-color: #ff4d4f !important;
+  border-color: #ff4d4f !important;
+}
+
+.ant-btn-primary:hover,
+.ant-btn-primary:focus {
+  background-color: #ff7875 !important;
+  border-color: #ff7875 !important;
+}
+
+/* Giữ nút danger với màu đỏ đậm hơn khi cần */
+.ant-btn-dangerous.ant-btn-primary {
+  background-color: #a8071a !important;
+  border-color: #a8071a !important;
+}
+
+.ant-btn-dangerous.ant-btn-primary:hover,
+.ant-btn-dangerous.ant-btn-primary:focus {
+  background-color: #cf1322 !important;
+  border-color: #cf1322 !important;
 }
