@@ -32,42 +32,48 @@
     </div>
 
     <!-- Table data -->
-    <a-table
-      :columns="columns"
-      :data-source="filteredData"
-      :scroll="{ x: 1500, y: 600 }"
-      :pagination="tablePagination"
-      bordered
-      size="middle"
-      :row-key="record => record.id"
-      :loading="isLoading"
-    >
-      <template #bodyCell="{ column, text, record }">
-        <template v-if="column.key === 'data_sheet_link'">
-          <a :href="text" target="_blank" v-if="text && text.trim() !== ''">Click để xem</a>
-          <span v-else>-</span>
+    <div class="merchandise-table-container">
+      <a-table
+        class="responsive-table"
+        :columns="columns"
+        :data-source="filteredData"
+        :rowKey="(record) => record.id"
+        :scroll="{ x: '100%', y: 600 }"
+        :pagination="tablePagination"
+        bordered
+        size="middle"
+        :loading="isLoading"
+        @change="handleTableChange"
+      >
+        <template #bodyCell="{ column, text, record }">
+          <template v-if="column.key === 'data_sheet_link'">
+            <a :href="text" target="_blank" v-if="text && text.trim() !== ''">
+              <FilePdfOutlined style="font-size: 20px; color: #ff4d4f;" />
+            </a>
+            <span v-else>-</span>
+          </template>
+          <template v-else-if="column.key === 'data_json'">
+            <a-button type="link" size="small" @click="showJsonModal(text)">Xem chi tiết</a-button>
+          </template>
+          <template v-else-if="column.key === 'created_at'">
+            {{ formatDate(text) }}
+          </template>
+          <template v-else-if="column.key === 'active'">
+            <a-tag :color="record.active ? 'green' : 'red'">
+              {{ record.active ? 'Có' : 'Không' }}
+            </a-tag>
+          </template>
+          <template v-else>
+            {{ text }}
+          </template>
         </template>
-        <template v-else-if="column.key === 'data_json'">
-          <a-button type="link" size="small" @click="showJsonModal(text)">Xem chi tiết</a-button>
+        <template #emptyText>
+          <div class="empty-data">
+            <p>Không có dữ liệu</p>
+          </div>
         </template>
-        <template v-else-if="column.key === 'created_at'">
-          {{ formatDate(text) }}
-        </template>
-        <template v-else-if="column.key === 'active'">
-          <a-tag :color="record.active ? 'green' : 'red'">
-            {{ record.active ? 'Có' : 'Không' }}
-          </a-tag>
-        </template>
-        <template v-else>
-          {{ text }}
-        </template>
-      </template>
-      <template #emptyText>
-        <div class="empty-data">
-          <p>Không có dữ liệu</p>
-        </div>
-      </template>
-    </a-table>
+      </a-table>
+    </div>
 
     <!-- Modal for JSON data -->
     <a-modal
@@ -90,6 +96,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { message } from 'ant-design-vue'
+import { FilePdfOutlined } from '@ant-design/icons-vue'
 // const CONST_HOST = "http://localhost:8080"
 const CONST_HOST = "https://id.slmsolar.com"
 
@@ -229,25 +236,27 @@ const columns = [
     title: 'ID',
     dataIndex: 'id',
     key: 'id',
-    width: 80,
+    width: 40,
+    align: 'center',
   },
   {
     title: 'Tên sản phẩm',
     dataIndex: 'name',
     key: 'name',
-    width: 200,
+    width: 250,
   },
   {
     title: 'Thương hiệu',
     dataIndex: ['brand', 'name'],
     key: 'brand',
-    width: 150,
+    width: 100,
+    align: 'center',
   },
   {
-    title: 'Link thông tin',
+    title: 'Data sheet',
     dataIndex: 'data_sheet_link',
     key: 'data_sheet_link',
-    width: 120,
+    width: 100,
     align: 'center',
   },
   {
@@ -255,12 +264,13 @@ const columns = [
     dataIndex: 'unit',
     key: 'unit',
     width: 100,
+    align: 'center',
   },
   {
     title: 'Mô tả trong hợp đồng',
     dataIndex: 'description_in_contract',
     key: 'description_in_contract',
-    width: 250,
+    width: 330,
   },
   {
     title: 'Thông tin tuỳ biến',
@@ -512,30 +522,29 @@ thead {
 </style>
 
 <style scoped>
+.merchandise-filter-container {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .merchandise-table-container {
-  width: 100% !important;
-  max-width: 100% !important;
-  box-sizing: border-box;
+  width: 100%;
+  overflow-x: auto;
 }
 
-:deep(.ant-table) {
-  width: 100% !important;
-  max-width: 100% !important;
+.responsive-table {
+  min-width: 800px;
 }
 
-:deep(.ant-table-wrapper) {
-  width: 100% !important;
-  max-width: 100% !important;
-}
-
-:deep(.ant-table-content) {
-  width: 100% !important;
-  max-width: 100% !important;
-}
-
-:deep(.ant-spin-container) {
-  width: 100% !important;
-  max-width: 100% !important;
+.filter-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .filter-section {
@@ -584,6 +593,7 @@ thead {
   background-color: #f0f0f0;
   font-weight: 600;
   padding: 10px 16px;
+  text-align: center;
 }
 
 :deep(.ant-table-tbody > tr > td) {

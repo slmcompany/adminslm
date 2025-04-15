@@ -4,9 +4,19 @@
     @mouseenter="onMouseEnter"
     @mouseleave="onMouseLeave"
   >
-    <div class="p-4 border-b border-gray-700 w-full">
-      <h2 class="text-2xl font-bold text-[#FF0000]" v-if="!localCollapsed">SLM</h2>
-      <h2 class="text-2xl font-bold text-[#FF0000]" v-else>S</h2>
+    <div class="py-6 px-4 border-b border-gray-700 w-full logo-container">
+      <img
+        v-if="!localCollapsed"
+        src="@/assets/slm-logo-white.png"
+        alt="SLM Logo"
+        class="logo-full"
+      />
+      <img
+        v-else
+        src="@/assets/slm-logo-white.png"
+        alt="SLM Logo"
+        class="logo-small"
+      />
     </div>
     <a-menu
       mode="inline"
@@ -155,17 +165,38 @@ watch(localCollapsed, (newValue) => {
 })
 
 const onMouseEnter = () => {
+  // Mở sidebar ngay lập tức khi hover
   localCollapsed.value = false
 }
 
 const onMouseLeave = () => {
+  // Đóng sidebar ngay lập tức khi rời khỏi
   localCollapsed.value = true
 }
 </script>
 
 <style scoped>
 .sidebar-container {
-  transition: width 0.3s ease;
+  transition: width 0.2s ease;
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80px;
+}
+
+.logo-full {
+  max-width: 100%;
+  height: auto;
+  max-height: 35px;
+}
+
+.logo-small {
+  max-width: 100%;
+  height: auto;
+  max-height: 25px;
 }
 
 .custom-dark-menu {

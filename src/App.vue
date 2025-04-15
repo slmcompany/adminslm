@@ -11,6 +11,7 @@ const authStore = useAuthStore();
 const collapsed = ref(true)
 
 const onCollapse = (val) => {
+  // Chỉ cập nhật trạng thái nếu được gọi từ SideBar component
   collapsed.value = val
 }
 
@@ -36,7 +37,6 @@ const shouldShowBreadcrumb = computed(() => {
         :width="250"
         :collapsed="collapsed"
         @collapse="onCollapse"
-        collapsible
         class="sidebar"
         :style="{
           position: 'fixed',
@@ -119,7 +119,7 @@ body, html {
 .main-layout {
   width: 100%;
   min-height: 100vh;
-  transition: margin-left 0.3s ease;
+  transition: margin-left 0.2s ease;
   overflow-x: hidden;
 }
 
