@@ -3,7 +3,6 @@
     <a-breadcrumb class="my-2 flex items-center flex-wrap">
       <a-breadcrumb-item>
         <router-link to="/" class="breadcrumb-link">
-          <home-outlined class="mr-1" />
           <span>Trang chủ</span>
         </router-link>
       </a-breadcrumb-item>
@@ -14,11 +13,9 @@
             :to="item.path"
             class="breadcrumb-link"
           >
-            <component :is="item.icon" class="mr-1" v-if="item.icon" />
             <span :class="{ 'text-primary': index === breadcrumbItems.length - 1 }">{{ item.title }}</span>
           </router-link>
           <span v-else class="breadcrumb-text">
-            <component :is="item.icon" class="mr-1" v-if="item.icon" />
             {{ item.title }}
           </span>
         </a-breadcrumb-item>
@@ -30,75 +27,63 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import {
-  HomeOutlined,
-  ShoppingOutlined,
-  FileTextOutlined,
-  EditOutlined,
-  SettingOutlined,
-  PlusOutlined,
-  DashboardOutlined,
-  AppstoreAddOutlined,
-  FileAddOutlined,
-  FileOutlined
-} from '@ant-design/icons-vue'
 
 const route = useRoute()
 
 // Định nghĩa cấu trúc breadcrumb cho mỗi route
 const routeMap = {
   'home': [
-    { title: 'Tổng quan', path: '/', icon: DashboardOutlined }
+    { title: 'Tổng quan', path: '/' }
   ],
   'add-pin-pv': [
-    { title: 'Quản lý sản phẩm', path: null, icon: ShoppingOutlined },
-    { title: 'Thêm tấm pin PV', path: '/add-pin-pv', icon: PlusOutlined }
+    { title: 'Quản lý sản phẩm', path: null },
+    { title: 'Thêm tấm pin PV', path: '/add-pin-pv' }
   ],
   'add-inverter': [
-    { title: 'Quản lý sản phẩm', path: null, icon: ShoppingOutlined },
-    { title: 'Thêm biến tần', path: '/add-inverter', icon: PlusOutlined }
+    { title: 'Quản lý sản phẩm', path: null },
+    { title: 'Thêm biến tần', path: '/add-inverter' }
   ],
   'add-battery': [
-    { title: 'Quản lý sản phẩm', path: null, icon: ShoppingOutlined },
-    { title: 'Thêm pin lưu trữ', path: '/add-battery', icon: PlusOutlined }
+    { title: 'Quản lý sản phẩm', path: null },
+    { title: 'Thêm pin lưu trữ', path: '/add-battery' }
   ],
   'add-aluminum-frame': [
-    { title: 'Quản lý sản phẩm', path: null, icon: ShoppingOutlined },
-    { title: 'Thêm hệ khung nhôm', path: '/add-aluminum-frame', icon: PlusOutlined }
+    { title: 'Quản lý sản phẩm', path: null },
+    { title: 'Thêm hệ khung nhôm', path: '/add-aluminum-frame' }
   ],
   'add-cable': [
-    { title: 'Quản lý sản phẩm', path: null, icon: ShoppingOutlined },
-    { title: 'Thêm dây điện', path: '/add-cable', icon: PlusOutlined }
+    { title: 'Quản lý sản phẩm', path: null },
+    { title: 'Thêm dây điện', path: '/add-cable' }
   ],
   'add-cabinet': [
-    { title: 'Quản lý sản phẩm', path: null, icon: ShoppingOutlined },
-    { title: 'Thêm tủ điện', path: '/add-cabinet', icon: PlusOutlined }
+    { title: 'Quản lý sản phẩm', path: null },
+    { title: 'Thêm tủ điện', path: '/add-cabinet' }
   ],
   'add-grounding-system': [
-    { title: 'Quản lý sản phẩm', path: null, icon: ShoppingOutlined },
-    { title: 'Thêm hệ tiếp địa', path: '/add-grounding-system', icon: PlusOutlined }
+    { title: 'Quản lý sản phẩm', path: null },
+    { title: 'Thêm hệ tiếp địa', path: '/add-grounding-system' }
   ],
   'add-installation': [
-    { title: 'Quản lý sản phẩm', path: null, icon: ShoppingOutlined },
-    { title: 'Thêm gói lắp đặt', path: '/add-installation', icon: PlusOutlined }
+    { title: 'Quản lý sản phẩm', path: null },
+    { title: 'Thêm gói lắp đặt', path: '/add-installation' }
   ],
   'combo-create': [
-    { title: 'Quản lý hợp đồng', path: null, icon: FileTextOutlined },
-    { title: 'Tạo Combo', path: '/combo-create', icon: AppstoreAddOutlined }
+    { title: 'Quản lý hợp đồng', path: null },
+    { title: 'Tạo Combo', path: '/combo-create' }
   ],
   'contract-create': [
-    { title: 'Quản lý hợp đồng', path: null, icon: FileTextOutlined },
-    { title: 'Tạo Hợp đồng mới', path: '/contract-create', icon: FileAddOutlined }
+    { title: 'Quản lý hợp đồng', path: null },
+    { title: 'Tạo Hợp đồng mới', path: '/contract-create' }
   ],
   'contract-create-old': [
-    { title: 'Quản lý hợp đồng', path: null, icon: FileTextOutlined },
-    { title: 'Tạo Hợp đồng cũ', path: '/contract-create-old', icon: FileOutlined }
+    { title: 'Quản lý hợp đồng', path: null },
+    { title: 'Tạo Hợp đồng cũ', path: '/contract-create-old' }
   ],
   'add-content': [
-    { title: 'Tạo nội dung', path: '/add-content', icon: EditOutlined }
+    { title: 'Tạo nội dung', path: '/add-content' }
   ],
   'policy-and-privacy': [
-    { title: 'Chính sách và quyền riêng tư', path: '/policy-and-privacy', icon: SettingOutlined }
+    { title: 'Chính sách và quyền riêng tư', path: '/policy-and-privacy' }
   ]
 }
 
@@ -138,12 +123,22 @@ const breadcrumbItems = computed(() => {
   padding: 2px 0;
 }
 
+/* CSS để căn chỉnh icon */
+:deep(.anticon) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  position: relative;
+  top: -1px;
+}
+
 .breadcrumb-link:hover {
-  color: #1890ff;
+  color: #ff4d4f;
 }
 
 .text-primary {
-  color: #1890ff;
+  color: #ff4d4f;
   font-weight: 500;
 }
 
@@ -156,8 +151,9 @@ const breadcrumbItems = computed(() => {
 }
 
 :deep(.ant-breadcrumb-separator) {
-  margin: 0 8px;
+  margin: 0 12px;
   flex-shrink: 0;
+  color: rgba(0, 0, 0, 0.3);
 }
 
 :deep(.ant-breadcrumb ol) {

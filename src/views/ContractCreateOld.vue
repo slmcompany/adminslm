@@ -117,7 +117,7 @@
                     <tr>
                         <td>Thời gian bắt đầu bảo hành</td>
                         <td>
-                            <input type="date" name="created_at" id="created_at" v-model="created_at" v-on:change="">
+                            <input type="date" name="created_at" id="created_at" v-model="created_at">
                         </td>
                     </tr>
                     <tr>
@@ -156,7 +156,7 @@
                         <td>
                             <select name="pv" id="pv" v-model="pv"
                                 v-on:change="reChangePower(), calculateW(), calcPvPrice(pv)">
-                                <option v-for="merchandise in pvs" :value="merchandise.id">{{ merchandise.name }}
+                                <option v-for="merchandise in pvs" :key="merchandise.id" :value="merchandise.id">{{ merchandise.name }}
                                 </option>
                             </select>
 
@@ -172,15 +172,15 @@
                         </td>
                         <td>
                             Giá:
-                            <input type="number" name="" id="" v-model="pv_price" min="0" v-on:change="">
+                            <input type="number" name="" id="" v-model="pv_price" min="0">
                         </td>
                         <td>
                             GM:
-                            <input type="number" name="" id="" v-model="pv_gm" min="0" v-on:change="">
+                            <input type="number" name="" id="" v-model="pv_gm" min="0">
                         </td>
                         <td>
                             Bảo hành:
-                            <input type="number" name="" id="" v-model="pv_warranty" min="0" v-on:change="">
+                            <input type="number" name="" id="" v-model="pv_warranty" min="0">
                         </td>
                     </tr>
 
@@ -190,7 +190,7 @@
                             <div v-for="(inverter, index) in inverters_list" :key="index" style="margin-bottom: 10px;">
                                 Loại:
                                 <select v-model="inverter.selected" v-on:change="calcInvPrice(inverter.selected)">
-                                    <option v-for="merchandise in inverters_show" :value="merchandise.id">
+                                    <option v-for="merchandise in inverters_show" :key="merchandise.id" :value="merchandise.id">
                                         {{ merchandise.name }}
                                     </option>
                                 </select><br>
@@ -214,7 +214,7 @@
                             <div v-for="(battery, index) in batteries_list" :key="index" style="margin-bottom: 10px;">
                                 Loại:
                                 <select v-model="battery.selected" v-on:change="calcBaPrice(battery.selected)">
-                                    <option v-for="merchandise in batteries_show" :value="merchandise.id">
+                                    <option v-for="merchandise in batteries_show" :key="merchandise.id" :value="merchandise.id">
                                         {{ merchandise.name }}
                                     </option>
                                 </select><br>
@@ -249,14 +249,14 @@
                             <div v-for="(frame, index) in aluminums_frames_list" :key="index"
                                 style="margin-bottom: 10px;">
                                 Loại: <select v-model="frame.selected" v-on:change="calculateAL(), calcFramePrice()">
-                                    <option v-for="merchandise in aluminums_frames_show" :value="merchandise.id">
+                                    <option v-for="merchandise in aluminums_frames_show" :key="merchandise.id" :value="merchandise.id">
                                         {{ merchandise.name }}
                                     </option>
                                 </select><br>
                                 Số lương(Cái): <input type="number" v-model="frame.quantity" placeholder="Số lượng"><br>
                                 Giá/đơn vị: <input type="number" v-model="frame.price" placeholder="Giá"><br>
-                                GM: <input type="number" name="" id="" v-model="frame.gm" min="0" v-on:change="">
-                                Thời gian bảo hành (năm): <input type="number" name="" id="" v-model="frame.warranty_years" min="0" v-on:change="">
+                                GM: <input type="number" name="" id="" v-model="frame.gm" min="0">
+                                Thời gian bảo hành (năm): <input type="number" name="" id="" v-model="frame.warranty_years" min="0">
                                 <button type="button" @click="removeAluminumFrame(index)">Xóa</button>
                             </div>
                             <button type="button" @click="addAluminumFrame">Thêm Hệ khung nhôm</button>
@@ -267,14 +267,14 @@
                         <td>
                             <div v-for="(cable, index) in dc_ac_cables_list" :key="index" style="margin-bottom: 10px;">
                                 Loại: <select v-model="cable.selected" v-on:change="calculateW(), calcCablePrice()">
-                                    <option v-for="merchandise in dc_ac_cables_show" :value="merchandise.id">
+                                    <option v-for="merchandise in dc_ac_cables_show" :key="merchandise.id" :value="merchandise.id">
                                         {{ merchandise.name }}
                                     </option>
                                 </select><br>
                                 Số lượng: <input type="number" v-model="cable.quantity" placeholder="Số lượng"><br>
                                 Giá/đơn vị: <input type="number" v-model="cable.price" placeholder="Giá"><br>
-                                GM: <input type="number" name="" id="" v-model="cable.gm" min="0" v-on:change=""><br>
-                                Thời gian bảo hành (năm): <input type="number" name="" id="" v-model="cable.warranty_years" min="0" v-on:change="">
+                                GM: <input type="number" name="" id="" v-model="cable.gm" min="0"><br>
+                                Thời gian bảo hành (năm): <input type="number" name="" id="" v-model="cable.warranty_years" min="0">
                                 <button type="button" @click="removeDcAcCable(index)">Xóa</button>
                             </div>
                             <button type="button" @click="addDcAcCable">Thêm Dây cáp DC/AC</button>
@@ -285,7 +285,7 @@
                         <td>
 
                             <select v-model="solar_panel_cabinet" v-on:change="calcCabinetPrice(solar_panel_cabinet)">
-                                <option v-for="merchandise in solar_panel_cabinets_show" :value="merchandise.id">{{
+                                <option v-for="merchandise in solar_panel_cabinets_show" :key="merchandise.id" :value="merchandise.id">{{
                                     merchandise.name }}</option>
                             </select>
                         </td>
@@ -314,7 +314,7 @@
                                 Loại:
                                 <select v-model="grounding.selected"
                                     v-on:change="calcGroundSystemPrice(grounding.selected)">
-                                    <option v-for="merchandise in grounding_systems" :value="merchandise.id">
+                                    <option v-for="merchandise in grounding_systems" :key="merchandise.id" :value="merchandise.id">
                                         {{ merchandise.name }}
                                     </option>
                                 </select><br>
@@ -335,7 +335,7 @@
                                 Loại:
                                 <select v-model="installation.selected"
                                     v-on:change="calcInstallationPrice(installation.selected)">
-                                    <option v-for="merchandise in installation_packages" :value="merchandise.id">
+                                    <option v-for="merchandise in installation_packages" :key="merchandise.id" :value="merchandise.id">
                                         {{ merchandise.name }}
                                     </option>
                                 </select><br>
@@ -379,7 +379,6 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { stringify } from 'flatted';
 import { toRaw } from 'vue';
 // const CONST_HOST = "http://localhost:8080"
 const CONST_HOST = "https://id.slmsolar.com"
@@ -389,9 +388,9 @@ const name = ref('')
 const customer_code = ref('')
 const created_at = ref(new Date())
 
-function printTime(){
-    console.log(created_at.value)
-}
+// function printTime(){
+//     console.log(created_at.value)
+// }
 const customer_name = ref('')
 const customer_address = ref('')
 const customer_phone = ref('')
@@ -415,8 +414,8 @@ const aluminums_frame_installation_type = ref('All')
 const pv_price = ref(0)
 
 const solar_panel_cabinet_price = ref(0)
-const grounding_system_price = ref(0)
-const installation_package_price = ref(0)
+// const grounding_system_price = ref(0) // Unused variable
+// const installation_package_price = ref(0) // Unused variable
 
 const pv_gm = ref(0)
 const pv_warranty = ref(0)
@@ -874,7 +873,7 @@ const createContract = async () => {
         body: JSON.stringify(sendingData)
     })
     if (response.ok) {
-        const data = await response.json()
+        await response.json()
         window.alert('Tạo thành công')
     } else {
         // Lấy thông tin lỗi từ phản hồi
@@ -964,25 +963,6 @@ const addBattery = () => {
 const removeBattery = (index) => {
     batteries_list.value.splice(index, 1);
 };
-for (let i = 0; i < grounding_systems_list.value.length; i++) {
-    const item = toRaw(grounding_systems_list.value[i]);
-    sendingArray.push({
-        merchandise_id: item.selected,
-        quantity: item.quantity,
-        price: item.price,
-        gm: item.gm
-    });
-}
-
-for (let i = 0; i < installation_packages_list.value.length; i++) {
-    const item = toRaw(installation_packages_list.value[i]);
-    sendingArray.push({
-        merchandise_id: item.selected,
-        quantity: item.quantity,
-        price: item.price,
-        gm: item.gm
-    });
-}
 
 const calculateAL = () => {
     for (let j = 0; j < aluminums_frames_list.value.length; j++) {
