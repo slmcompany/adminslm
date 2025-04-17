@@ -94,7 +94,7 @@ const router = createRouter({
       path: '/policy-and-privacy',
       name: 'policy-and-privacy',
       component: () => import('../views/PolicyAndPrivacy.vue'),
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: false }
     },
   ],
 })
