@@ -1,28 +1,29 @@
-<template style="align-items: center;">
-  <div
-    style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); width: 1024px; margin: 20px auto;">
-    <h1 style="color: #2c3e50; font-size: 28px; margin-bottom: 10px;">{{ title }}</h1>
-    <p style="font-style: italic; color: #7f8c8d; margin-bottom: 25px;">{{ lastUpdated }}</p>
+<template>
+  <div class="privacy-page">
+    <div class="privacy-container">
+      <h1 style="color: #2c3e50; font-size: 28px; margin-bottom: 10px;">{{ title }}</h1>
+      <p style="font-style: italic; color: #7f8c8d; margin-bottom: 25px;">{{ lastUpdated }}</p>
 
-    <div style="margin-bottom: 25px;">
-      <p>Ứng dụng <span style="font-weight: bold;">{{ appName }}</span> (gọi tắt là "chúng tôi", "ứng dụng") cam
-        kết bảo vệ quyền riêng tư và dữ liệu cá nhân của người dùng. Chính sách này giải thích cách chúng tôi
-        thu thập, sử dụng và bảo vệ thông tin khi bạn sử dụng ứng dụng.</p>
-    </div>
+      <div style="margin-bottom: 25px;">
+        <p>Ứng dụng <span style="font-weight: bold;">{{ appName }}</span> (gọi tắt là "chúng tôi", "ứng dụng") cam
+          kết bảo vệ quyền riêng tư và dữ liệu cá nhân của người dùng. Chính sách này giải thích cách chúng tôi
+          thu thập, sử dụng và bảo vệ thông tin khi bạn sử dụng ứng dụng.</p>
+      </div>
 
-    <div v-for="(section, index) in sections" :key="index" style="margin-bottom: 25px;">
-      <h2 style="font-size: 22px; color: #2c3e50; margin-top: 25px; margin-bottom: 15px;">
-        <span style="font-weight: bold; margin-right: 8px;">{{ index + 1 }}.</span> {{ section.title }}
-      </h2>
-      <div v-html="section.content"></div>
-    </div>
+      <div v-for="(section, index) in sections" :key="index" style="margin-bottom: 25px;">
+        <h2 style="font-size: 22px; color: #2c3e50; margin-top: 25px; margin-bottom: 15px;">
+          <span style="font-weight: bold; margin-right: 8px;">{{ index + 1 }}.</span> {{ section.title }}
+        </h2>
+        <div v-html="section.content"></div>
+      </div>
 
-    <div style="background-color: #f2f7ff; padding: 15px; border-radius: 6px; margin-top: 30px;">
-      <h2 style="font-size: 22px; color: #2c3e50; margin-top: 5px; margin-bottom: 15px;">
-        <span style="font-weight: bold; margin-right: 8px;">{{ sections.length + 1 }}.</span> {{
-          contactSection.title }}
-      </h2>
-      <div v-html="contactSection.content"></div>
+      <div style="background-color: #f2f7ff; padding: 15px; border-radius: 6px; margin-top: 30px;">
+        <h2 style="font-size: 22px; color: #2c3e50; margin-top: 5px; margin-bottom: 15px;">
+          <span style="font-weight: bold; margin-right: 8px;">{{ sections.length + 1 }}.</span> {{
+            contactSection.title }}
+        </h2>
+        <div v-html="contactSection.content"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -97,11 +98,14 @@ const contactSection = ref({
 
 <style lang="css" scoped>
 /* src/views/PolicyAndPrivacy.vue */
-body {
+.privacy-page {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
   color: #333;
   background-color: #f9f9f9;
+  min-height: 100vh;
+  padding: 20px;
+  overflow-y: auto;
 }
 
 .privacy-container {
@@ -109,8 +113,10 @@ body {
   padding: 30px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  max-width: 800px;
-  margin: 20px auto;
+  max-width: 1024px;
+  width: 100%;
+  margin: 0 auto;
+  overflow-y: auto;
 }
 
 h1 {
@@ -160,9 +166,17 @@ li {
   margin-top: 30px;
 }
 
+@media (max-width: 1100px) {
+  .privacy-container {
+    max-width: 90%;
+    padding: 20px;
+  }
+}
+
 @media (max-width: 600px) {
   .privacy-container {
-    padding: 20px;
+    max-width: 100%;
+    padding: 15px;
     margin: 10px;
   }
 }
