@@ -19,7 +19,7 @@ export const useAuthStore = defineStore('auth', {
       this.error = null
 
       try {
-        const response = await axios.get('https://id.slmsolar.com/api/users')
+        const response = await axios.get('https://api.slmglobal.vn/api/users')
         const users = response.data
 
         // Tìm người dùng với số điện thoại và mật khẩu phù hợp

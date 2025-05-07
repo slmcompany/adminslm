@@ -155,7 +155,7 @@ import {
 
 import 'ckeditor5/ckeditor5.css'
 
-const CONST_HOST = "https://id.slmsolar.com"
+const CONST_HOST = "https://api.slmglobal.vn"
 const visible = ref(false)
 const showDrawer = () => {
   visible.value = true

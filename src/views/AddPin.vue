@@ -115,7 +115,7 @@ import { ref, onMounted } from 'vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 
-const CONST_HOST = "https://id.slmsolar.com"
+const CONST_HOST = "https://api.slmglobal.vn"
 const visible = ref(false)
 const showDrawer = () => {
   visible.value = true
