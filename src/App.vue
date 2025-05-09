@@ -12,10 +12,9 @@ const authStore = useAuthStore();
 const collapsed = ref(true)
 
 const onCollapse = (val) => {
-  // Chỉ cập nhật trạng thái nếu được gọi từ SideBar component
+  // Cập nhật giá trị collapsed luôn, không cần điều kiện
   collapsed.value = val
 }
-
 const showSidebar = computed(() => {
   return route.name !== 'policy-and-privacy' && route.name !== 'login' && authStore.isAuthenticated && authStore.isAdmin
 })
@@ -37,6 +36,7 @@ const shouldShowBreadcrumb = computed(() => {
         v-if="showSidebar"
         :width="250"
         :collapsed="collapsed"
+        :trigger="null" 
         @collapse="onCollapse"
         class="sidebar"
         :style="{
@@ -51,9 +51,13 @@ const shouldShowBreadcrumb = computed(() => {
         <SideBar :collapsed="collapsed" @update:collapsed="onCollapse" />
       </a-layout-sider>
 
-      <a-layout class="main-layout" :style="{
-          marginLeft: showSidebar ? (collapsed ? '80px' : '250px') : '0'
-        }">
+      <a-layout 
+        class="main-layout" 
+        :style="{
+          marginLeft: showSidebar ? (collapsed ? '80px' : '250px') : '0',
+          transition: 'margin-left 0.2s ease-out'
+        }"
+      >
         <div class="breadcrumb-bar" v-if="shouldShowBreadcrumb">
           <div class="breadcrumb-container">
             <BreadcrumbNav />

@@ -106,12 +106,18 @@
         </a-menu-item>
       </a-sub-menu>
 
-      <a-menu-item key="add-content" class="w-full">
-        <template #icon><EditOutlined /></template>
-        <router-link to="/add-content" class="w-full block">
-          <span>Tạo nội dung</span>
-        </router-link>
-      </a-menu-item>
+      
+
+      <a-sub-menu key="content" class="w-full">
+        <template #icon><FileTextOutlined /></template>
+        <template #title>Nội dung</template>
+        <a-menu-item key="add-content" class="w-full">
+          <template #icon><EditOutlined /></template>
+          <router-link to="/add-content" class="w-full block">
+            <span>Tạo nội dung</span>
+          </router-link>
+        </a-menu-item>
+      </a-sub-menu>
 
       <a-menu-item key="notifications" class="w-full">
         <template #icon><NotificationOutlined /></template>
@@ -154,30 +160,28 @@ const emit = defineEmits(['update:collapsed'])
 const route = useRoute()
 const localCollapsed = ref(props.collapsed)
 
-// Sync localCollapsed with props.collapsed
+// Cập nhật giá trị localCollapsed khi props.collapsed thay đổi
 watch(() => props.collapsed, (newValue) => {
   localCollapsed.value = newValue
 })
 
-// Sync props.collapsed with localCollapsed
-watch(localCollapsed, (newValue) => {
-  emit('update:collapsed', newValue)
-})
+// Loại bỏ phần watch localCollapsed để tránh vòng lặp cập nhật
 
 const onMouseEnter = () => {
-  // Mở sidebar ngay lập tức khi hover
-  localCollapsed.value = false
+  // Chỉ emit sự kiện để thay đổi từ App.vue
+  emit('update:collapsed', false)
 }
 
 const onMouseLeave = () => {
-  // Đóng sidebar ngay lập tức khi rời khỏi
-  localCollapsed.value = true
+  // Chỉ emit sự kiện để thay đổi từ App.vue
+  emit('update:collapsed', true)
 }
 </script>
 
+
 <style scoped>
 .sidebar-container {
-  transition: width 0.2s ease;
+  transition: all 0.2s ease; /* Đảm bảo tất cả thuộc tính có transition */
 }
 
 .logo-container {
