@@ -287,14 +287,12 @@ const createMerchandise = async () => {
 
 const loadBrands = async () => {
   try {
-    const response = await fetch(`${CONST_HOST}/api/json/brands`, {
-      method: 'GET',
-      credentials: 'include',
-    })
+    const response = await fetch(CONST_HOST + '/api/brands')
 
     if (response.ok) {
       const data = await response.json()
-      brands.value = data.items
+      brands.value = data
+      choseBrand.value = data[0].id
     }
   } catch (error) {
     console.error('Error loading brands:', error)
@@ -303,24 +301,23 @@ const loadBrands = async () => {
 
 const loadMerchandises = async () => {
   try {
-    const response = await fetch(`${CONST_HOST}/api/json/merchandises/template-code/BATTERY_STORAGE`, {
-      method: 'GET',
-      credentials: 'include',
-    })
-
+    const response = await fetch(CONST_HOST + '/api/products')
     if (response.ok) {
       const data = await response.json()
-      merchandises.value = data.items
+      merchandises.value = data
+    } else {
+      message.error('Tải danh sách vật tư thất bại')
     }
   } catch (error) {
-    console.error('Error loading merchandises:', error)
+    message.error('Có lỗi xảy ra')
+    console.error('Error:', error)
   }
 }
 
-onMounted(() => {
-  loadBrands()
-  loadMerchandises()
-  addImageInput()
+onMounted(async () => {
+  await loadBrands()
+  await loadMerchandises()
+  // addImageInput()
 })
 </script>
 

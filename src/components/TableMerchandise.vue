@@ -343,7 +343,7 @@ watch(
     if (newMerchandises && newMerchandises.length > 0) {
       localMerchandises.value = newMerchandises
     } else {
-      loadMerchandises()
+      // loadMerchandises()
     }
   },
   { immediate: true }
@@ -359,9 +359,9 @@ watch(
 )
 
 onMounted(() => {
-  if (!props.merchandises || props.merchandises.length === 0) {
-    loadMerchandises()
-  }
+  // if (!props.merchandises || props.merchandises.length === 0) {
+  //   loadMerchandises()
+  // }
 })
 </script>
 

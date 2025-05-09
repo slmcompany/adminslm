@@ -311,8 +311,8 @@ const loadMerchandises = async () => {
 }
 
 onMounted(async () => {
-  loadBrands()
-  loadMerchandises()
+  await loadBrands()
+  await loadMerchandises()
 })
 </script>
 
