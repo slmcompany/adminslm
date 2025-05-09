@@ -5,7 +5,7 @@
                 <tbody>
                     <tr>
                         <td colspan="6" style="">
-                            <h1 style="display: flex; flex-direction: column; align-items: center;">Bảng tạo hợp đồng
+                            <h1 style="display: flex; flex-direction: column; align-items: center; color: aliceblue;">Bảng tạo hợp đồng
                                 trọn gói lắp đặt</h1>
                         </td>
                     </tr>
@@ -117,7 +117,7 @@
                     <tr>
                         <td>Thời gian bắt đầu bảo hành</td>
                         <td>
-                            <input type="date" name="created_at" id="created_at" v-model="created_at">
+                            <input type="date" name="created_at" id="created_at" v-model="created_at" v-on:change="">
                         </td>
                     </tr>
                     <tr>
@@ -156,7 +156,7 @@
                         <td>
                             <select name="pv" id="pv" v-model="pv"
                                 v-on:change="reChangePower(), calculateW(), calcPvPrice(pv)">
-                                <option v-for="merchandise in pvs" :key="merchandise.id" :value="merchandise.id">{{ merchandise.name }}
+                                <option v-for="merchandise in pvs" :value="merchandise.id">{{ merchandise.name }}
                                 </option>
                             </select>
 
@@ -172,15 +172,15 @@
                         </td>
                         <td>
                             Giá:
-                            <input type="number" name="" id="" v-model="pv_price" min="0">
+                            <input type="number" name="" id="" v-model="pv_price" min="0" v-on:change="">
                         </td>
                         <td>
                             GM:
-                            <input type="number" name="" id="" v-model="pv_gm" min="0">
+                            <input type="number" name="" id="" v-model="pv_gm" min="0" v-on:change="">
                         </td>
                         <td>
                             Bảo hành:
-                            <input type="number" name="" id="" v-model="pv_warranty" min="0">
+                            <input type="number" name="" id="" v-model="pv_warranty" min="0" v-on:change="">
                         </td>
                     </tr>
 
@@ -190,7 +190,7 @@
                             <div v-for="(inverter, index) in inverters_list" :key="index" style="margin-bottom: 10px;">
                                 Loại:
                                 <select v-model="inverter.selected" v-on:change="calcInvPrice(inverter.selected)">
-                                    <option v-for="merchandise in inverters_show" :key="merchandise.id" :value="merchandise.id">
+                                    <option v-for="merchandise in inverters_show" :value="merchandise.id">
                                         {{ merchandise.name }}
                                     </option>
                                 </select><br>
@@ -214,7 +214,7 @@
                             <div v-for="(battery, index) in batteries_list" :key="index" style="margin-bottom: 10px;">
                                 Loại:
                                 <select v-model="battery.selected" v-on:change="calcBaPrice(battery.selected)">
-                                    <option v-for="merchandise in batteries_show" :key="merchandise.id" :value="merchandise.id">
+                                    <option v-for="merchandise in batteries_show" :value="merchandise.id">
                                         {{ merchandise.name }}
                                     </option>
                                 </select><br>
@@ -249,14 +249,14 @@
                             <div v-for="(frame, index) in aluminums_frames_list" :key="index"
                                 style="margin-bottom: 10px;">
                                 Loại: <select v-model="frame.selected" v-on:change="calculateAL(), calcFramePrice()">
-                                    <option v-for="merchandise in aluminums_frames_show" :key="merchandise.id" :value="merchandise.id">
+                                    <option v-for="merchandise in aluminums_frames_show" :value="merchandise.id">
                                         {{ merchandise.name }}
                                     </option>
                                 </select><br>
                                 Số lương(Cái): <input type="number" v-model="frame.quantity" placeholder="Số lượng"><br>
                                 Giá/đơn vị: <input type="number" v-model="frame.price" placeholder="Giá"><br>
-                                GM: <input type="number" name="" id="" v-model="frame.gm" min="0">
-                                Thời gian bảo hành (năm): <input type="number" name="" id="" v-model="frame.warranty_years" min="0">
+                                GM: <input type="number" name="" id="" v-model="frame.gm" min="0" v-on:change="">
+                                Thời gian bảo hành (năm): <input type="number" name="" id="" v-model="frame.warranty_years" min="0" v-on:change="">
                                 <button type="button" @click="removeAluminumFrame(index)">Xóa</button>
                             </div>
                             <button type="button" @click="addAluminumFrame">Thêm Hệ khung nhôm</button>
@@ -267,14 +267,14 @@
                         <td>
                             <div v-for="(cable, index) in dc_ac_cables_list" :key="index" style="margin-bottom: 10px;">
                                 Loại: <select v-model="cable.selected" v-on:change="calculateW(), calcCablePrice()">
-                                    <option v-for="merchandise in dc_ac_cables_show" :key="merchandise.id" :value="merchandise.id">
+                                    <option v-for="merchandise in dc_ac_cables_show" :value="merchandise.id">
                                         {{ merchandise.name }}
                                     </option>
                                 </select><br>
                                 Số lượng: <input type="number" v-model="cable.quantity" placeholder="Số lượng"><br>
                                 Giá/đơn vị: <input type="number" v-model="cable.price" placeholder="Giá"><br>
-                                GM: <input type="number" name="" id="" v-model="cable.gm" min="0"><br>
-                                Thời gian bảo hành (năm): <input type="number" name="" id="" v-model="cable.warranty_years" min="0">
+                                GM: <input type="number" name="" id="" v-model="cable.gm" min="0" v-on:change=""><br>
+                                Thời gian bảo hành (năm): <input type="number" name="" id="" v-model="cable.warranty_years" min="0" v-on:change="">
                                 <button type="button" @click="removeDcAcCable(index)">Xóa</button>
                             </div>
                             <button type="button" @click="addDcAcCable">Thêm Dây cáp DC/AC</button>
@@ -285,7 +285,7 @@
                         <td>
 
                             <select v-model="solar_panel_cabinet" v-on:change="calcCabinetPrice(solar_panel_cabinet)">
-                                <option v-for="merchandise in solar_panel_cabinets_show" :key="merchandise.id" :value="merchandise.id">{{
+                                <option v-for="merchandise in solar_panel_cabinets_show" :value="merchandise.id">{{
                                     merchandise.name }}</option>
                             </select>
                         </td>
@@ -314,7 +314,7 @@
                                 Loại:
                                 <select v-model="grounding.selected"
                                     v-on:change="calcGroundSystemPrice(grounding.selected)">
-                                    <option v-for="merchandise in grounding_systems" :key="merchandise.id" :value="merchandise.id">
+                                    <option v-for="merchandise in grounding_systems" :value="merchandise.id">
                                         {{ merchandise.name }}
                                     </option>
                                 </select><br>
@@ -335,7 +335,7 @@
                                 Loại:
                                 <select v-model="installation.selected"
                                     v-on:change="calcInstallationPrice(installation.selected)">
-                                    <option v-for="merchandise in installation_packages" :key="merchandise.id" :value="merchandise.id">
+                                    <option v-for="merchandise in installation_packages" :value="merchandise.id">
                                         {{ merchandise.name }}
                                     </option>
                                 </select><br>
@@ -379,18 +379,19 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { stringify } from 'flatted';
 import { toRaw } from 'vue';
 // const CONST_HOST = "http://localhost:8080"
-const CONST_HOST = "https://id.slmsolar.com"
+const CONST_HOST = "https://api.slmglobal.vn"
 
 const code = ref('')
 const name = ref('')
 const customer_code = ref('')
 const created_at = ref(new Date())
 
-// function printTime(){
-//     console.log(created_at.value)
-// }
+function printTime(){
+    console.log(created_at.value)
+}
 const customer_name = ref('')
 const customer_address = ref('')
 const customer_phone = ref('')
@@ -414,8 +415,8 @@ const aluminums_frame_installation_type = ref('All')
 const pv_price = ref(0)
 
 const solar_panel_cabinet_price = ref(0)
-// const grounding_system_price = ref(0) // Unused variable
-// const installation_package_price = ref(0) // Unused variable
+const grounding_system_price = ref(0)
+const installation_package_price = ref(0)
 
 const pv_gm = ref(0)
 const pv_warranty = ref(0)
@@ -873,7 +874,7 @@ const createContract = async () => {
         body: JSON.stringify(sendingData)
     })
     if (response.ok) {
-        await response.json()
+        const data = await response.json()
         window.alert('Tạo thành công')
     } else {
         // Lấy thông tin lỗi từ phản hồi
@@ -963,6 +964,25 @@ const addBattery = () => {
 const removeBattery = (index) => {
     batteries_list.value.splice(index, 1);
 };
+for (let i = 0; i < grounding_systems_list.value.length; i++) {
+    const item = toRaw(grounding_systems_list.value[i]);
+    sendingArray.push({
+        merchandise_id: item.selected,
+        quantity: item.quantity,
+        price: item.price,
+        gm: item.gm
+    });
+}
+
+for (let i = 0; i < installation_packages_list.value.length; i++) {
+    const item = toRaw(installation_packages_list.value[i]);
+    sendingArray.push({
+        merchandise_id: item.selected,
+        quantity: item.quantity,
+        price: item.price,
+        gm: item.gm
+    });
+}
 
 const calculateAL = () => {
     for (let j = 0; j < aluminums_frames_list.value.length; j++) {
@@ -1094,10 +1114,185 @@ onMounted(() => {
 </script>
 
 <style lang="css" scoped>
+/* Main styling for the table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  margin-bottom: 30px;
+  background-color: #fff;
+}
+
+/* Header styling */
+table h1 {
+  margin: 0;
+  padding: 15px 0;
+  color: #2c3e50;
+  font-size: 22px;
+  font-weight: 600;
+  text-align: center;
+  width: 100%;
+}
+
+/* Table cells */
 td {
-    white-space: nowrap;
-    /* Không cho xuống dòng */
-    width: 150px;
-    /* Đặt độ rộng tùy chỉnh */
+  padding: 12px 15px;
+  border-bottom: 1px solid #ddd;
+  vertical-align: middle;
+  font-size: 14px;
+}
+
+/* Alternating row colors */
+tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+/* First column (labels) */
+tr td:first-child {
+  width: 180px;
+  font-weight: 600;
+  color: #2c3e50;
+  background-color: #f1f8ff;
+}
+
+/* Input fields and selects */
+input, select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+}
+
+input:focus, select:focus {
+  border-color: #4f9de9;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(79, 157, 233, 0.2);
+}
+
+/* Number input fields specific styling */
+input[type="number"] {
+  max-width: 120px;
+}
+
+/* Button styling */
+button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s, transform 0.2s;
+  margin: 5px;
+}
+
+/* Primary action buttons */
+button[type="button"] {
+  background-color: #4f9de9;
+  color: white;
+}
+
+button[type="button"]:hover {
+  background-color: #3a8ad8;
+  transform: translateY(-2px);
+}
+
+/* Remove buttons */
+button[type="button"][onclick*="remove"] {
+  background-color: #e74c3c;
+  color: white;
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+button[type="button"][onclick*="remove"]:hover {
+  background-color: #c0392b;
+}
+
+/* Add buttons */
+button[type="button"][onclick*="add"] {
+  background-color: #2ecc71;
+  color: white;
+}
+
+button[type="button"][onclick*="add"]:hover {
+  background-color: #27ae60;
+}
+
+/* Calculate buttons */
+button[type="button"][onclick*="calculate"] {
+  background-color: #f39c12;
+  color: white;
+}
+
+button[type="button"][onclick*="calculate"]:hover {
+  background-color: #e67e22;
+}
+
+/* Create combo button - make it stand out */
+button[type="button"][onclick*="createCombo"] {
+  background-color: #8e44ad;
+  color: white;
+  font-weight: 600;
+  padding: 10px 20px;
+}
+
+button[type="button"][onclick*="createCombo"]:hover {
+  background-color: #7d3c98;
+  transform: translateY(-2px);
+}
+
+/* Item groups styling (for inverters, batteries, etc.) */
+div[style="margin-bottom: 10px;"] {
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  margin-bottom: 15px !important;
+  background-color: #fafafa;
+}
+
+/* Header cells (first row) */
+tr:first-child td {
+  background-color: #34495e;
+  color: white;
+  border: none;
+}
+
+/* Total price and GM row highlighting */
+tr:nth-last-child(3) td, 
+tr:nth-last-child(2) td {
+  background-color: #ecf0f1;
+  font-weight: 600;
+}
+
+/* Make the fields in these rows stand out */
+tr:nth-last-child(3) input, 
+tr:nth-last-child(2) input {
+  font-weight: bold;
+  font-size: 16px;
+  color: #2980b9;
+  background-color: #f8f9fa;
+}
+
+/* Row hover effect */
+tr:hover {
+  background-color: #f5f7fa;
+}
+
+
+/* Đảm bảo bảng có thể cuộn khi nội dung dài */
+form {
+  min-height: 100%;
+}
+
+/* Fix lỗi không cuộn được trên một số trình duyệt */
+@media screen and (max-width: 100%) {
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
 }
 </style>

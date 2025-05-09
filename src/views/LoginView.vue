@@ -101,7 +101,7 @@ const handleSubmit = async () => {
 }
 </script>
 
-<style>
+<style scoped>
 html, body, #app {
   margin: 0 !important;
   padding: 0 !important;

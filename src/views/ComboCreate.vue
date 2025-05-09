@@ -1,11 +1,11 @@
 <template>
-    <div>
-        <form action="#">
+    <div style="height: 100%; overflow-y: auto;">
+        <form action="#" style="max-width: 100%; overflow-x: auto;">
             <table border="solid">
                 <tbody>
                     <tr>
                         <td colspan="6" style="">
-                            <h1 style="display: flex; flex-direction: column; align-items: center;">Bảng tạo combo trọn
+                            <h1 style="display: flex; flex-direction: column; align-items: center; color: aliceblue;">Bảng tạo combo trọn
                                 gói lắp đặt</h1>
                         </td>
                     </tr>
@@ -258,15 +258,13 @@
                         <td>
                             <button type="button" @click="createCombo()">Tạo combo</button>
                         </td>
-                        <!-- <td>
-                            <button type="button" @click="calculateAL()">Tính số lượng nhôm</button>
-                        </td> -->
                     </tr>
                 </tbody>
             </table>
         </form>
     </div>
 </template>
+
 
 <script setup>
 import { ref, onMounted } from 'vue'
@@ -939,10 +937,185 @@ onMounted(() => {
 </script>
 
 <style lang="css" scoped>
+/* Main styling for the table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  margin-bottom: 30px;
+  background-color: #fff;
+}
+
+/* Header styling */
+table h1 {
+  margin: 0;
+  padding: 15px 0;
+  color: #2c3e50;
+  font-size: 22px;
+  font-weight: 600;
+  text-align: center;
+  width: 100%;
+}
+
+/* Table cells */
 td {
-    white-space: nowrap;
-    /* Không cho xuống dòng */
-    width: 150px;
-    /* Đặt độ rộng tùy chỉnh */
+  padding: 12px 15px;
+  border-bottom: 1px solid #ddd;
+  vertical-align: middle;
+  font-size: 14px;
+}
+
+/* Alternating row colors */
+tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+/* First column (labels) */
+tr td:first-child {
+  width: 180px;
+  font-weight: 600;
+  color: #2c3e50;
+  background-color: #f1f8ff;
+}
+
+/* Input fields and selects */
+input, select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+}
+
+input:focus, select:focus {
+  border-color: #4f9de9;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(79, 157, 233, 0.2);
+}
+
+/* Number input fields specific styling */
+input[type="number"] {
+  max-width: 120px;
+}
+
+/* Button styling */
+button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s, transform 0.2s;
+  margin: 5px;
+}
+
+/* Primary action buttons */
+button[type="button"] {
+  background-color: #4f9de9;
+  color: white;
+}
+
+button[type="button"]:hover {
+  background-color: #3a8ad8;
+  transform: translateY(-2px);
+}
+
+/* Remove buttons */
+button[type="button"][onclick*="remove"] {
+  background-color: #e74c3c;
+  color: white;
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+button[type="button"][onclick*="remove"]:hover {
+  background-color: #c0392b;
+}
+
+/* Add buttons */
+button[type="button"][onclick*="add"] {
+  background-color: #2ecc71;
+  color: white;
+}
+
+button[type="button"][onclick*="add"]:hover {
+  background-color: #27ae60;
+}
+
+/* Calculate buttons */
+button[type="button"][onclick*="calculate"] {
+  background-color: #f39c12;
+  color: white;
+}
+
+button[type="button"][onclick*="calculate"]:hover {
+  background-color: #e67e22;
+}
+
+/* Create combo button - make it stand out */
+button[type="button"][onclick*="createCombo"] {
+  background-color: #8e44ad;
+  color: white;
+  font-weight: 600;
+  padding: 10px 20px;
+}
+
+button[type="button"][onclick*="createCombo"]:hover {
+  background-color: #7d3c98;
+  transform: translateY(-2px);
+}
+
+/* Item groups styling (for inverters, batteries, etc.) */
+div[style="margin-bottom: 10px;"] {
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  margin-bottom: 15px !important;
+  background-color: #fafafa;
+}
+
+/* Header cells (first row) */
+tr:first-child td {
+  background-color: #34495e;
+  color: white;
+  border: none;
+}
+
+/* Total price and GM row highlighting */
+tr:nth-last-child(3) td, 
+tr:nth-last-child(2) td {
+  background-color: #ecf0f1;
+  font-weight: 600;
+}
+
+/* Make the fields in these rows stand out */
+tr:nth-last-child(3) input, 
+tr:nth-last-child(2) input {
+  font-weight: bold;
+  font-size: 16px;
+  color: #2980b9;
+  background-color: #f8f9fa;
+}
+
+/* Row hover effect */
+tr:hover {
+  background-color: #f5f7fa;
+}
+
+
+/* Đảm bảo bảng có thể cuộn khi nội dung dài */
+form {
+  min-height: 100%;
+}
+
+/* Fix lỗi không cuộn được trên một số trình duyệt */
+@media screen and (max-width: 100%) {
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
 }
 </style>

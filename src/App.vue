@@ -111,12 +111,15 @@ body, html {
   margin: 0;
   padding: 0;
   width: 100%;
+  height: 100%;
+  overflow-y: auto;
   overflow-x: hidden;
 }
 
 #app {
   width: 100%;
-  overflow-x: hidden;
+  height: 100%;
+  overflow: visible;
 }
 
 /* Layout structure */
@@ -124,13 +127,14 @@ body, html {
   display: flex;
   width: 100%;
   min-height: 100vh;
-  overflow-x: hidden;
   position: relative;
+  overflow: visible;
 }
 
 .layout-container {
   width: 100%;
   min-height: 100vh;
+  overflow: visible;
 }
 
 .sidebar {
@@ -142,7 +146,9 @@ body, html {
   width: 100%;
   min-height: 100vh;
   transition: margin-left 0.2s ease;
-  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
 }
 
 /* Header styling */
@@ -175,6 +181,9 @@ body, html {
   background-color: white;
   border-bottom: 1px solid #e8e8e8;
   width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 998;
 }
 
 .breadcrumb-container {
@@ -226,14 +235,15 @@ body, html {
 .content-container {
   background-color: #f0f2f5;
   padding: 16px;
-  min-height: calc(100vh - 48px - 48px);
+  flex: 1;
   width: 100%;
-  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .content-wrapper {
   width: 100%;
   background-color: transparent;
+  min-height: 100%;
 }
 
 /* Footer styling */
@@ -242,6 +252,7 @@ body, html {
   text-align: center;
   padding: 12px 0;
   height: 48px;
+  width: 100%;
 }
 
 /* Make sure tables and cards use full width */

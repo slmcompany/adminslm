@@ -45,24 +45,94 @@
         :loading="isLoading"
         @change="handleTableChange"
       >
-        <template #bodyCell="{ column, text, record }">
-          <template v-if="column.key === 'data_sheet_link'">
-            <a :href="text" target="_blank" v-if="text && text.trim() !== ''">
-              <FilePdfOutlined style="font-size: 20px; color: #ff4d4f;" />
-            </a>
-            <span v-else>-</span>
+        <template #bodyCell="{ column, text, record, index }">
+          <!-- Name column -->
+          <template v-if="column.key === 'name'">
+            <div v-if="editingRow === record.id">
+              <a-input v-model:value="editingData.name" />
+            </div>
+            <template v-else>{{ text }}</template>
           </template>
+          
+          <!-- Data sheet link column -->
+          <template v-else-if="column.key === 'data_sheet_link'">
+            <div v-if="editingRow === record.id">
+              <a-input v-model:value="editingData.data_sheet_link" />
+            </div>
+            <template v-else>
+              <a :href="text" target="_blank" v-if="text && text.trim() !== ''">
+                <FilePdfOutlined style="font-size: 20px; color: #ff4d4f;" />
+              </a>
+              <span v-else>-</span>
+            </template>
+          </template>
+          
+          <!-- Unit column -->
+          <template v-else-if="column.key === 'unit'">
+            <div v-if="editingRow === record.id">
+              <a-input v-model:value="editingData.unit" />
+            </div>
+            <template v-else>{{ text }}</template>
+          </template>
+          
+          <!-- Description in contract column -->
+          <template v-else-if="column.key === 'description_in_contract'">
+            <div v-if="editingRow === record.id">
+              <a-textarea 
+                v-model:value="editingData.description_in_contract" 
+                :auto-size="{ minRows: 2, maxRows: 6 }" 
+              />
+            </div>
+            <template v-else>{{ text }}</template>
+          </template>
+          
+          <!-- Description in quotation column -->
+          <template v-else-if="column.key === 'description_in_quotation'">
+            <div v-if="editingRow === record.id">
+              <a-textarea 
+                v-model:value="editingData.description_in_quotation" 
+                :auto-size="{ minRows: 2, maxRows: 6 }" 
+              />
+            </div>
+            <template v-else>{{ text }}</template>
+          </template>
+          
+          <!-- Custom data column -->
           <template v-else-if="column.key === 'data_json'">
-            <a-button type="link" size="small" @click="showJsonModal(text)">Xem chi tiết</a-button>
+            <a-button type="link" size="small" @click="showJsonModal(record)">Xem chi tiết</a-button>
           </template>
+          
+          <!-- Created at column -->
           <template v-else-if="column.key === 'created_at'">
             {{ formatDate(text) }}
           </template>
+          
+          <!-- Active status column -->
           <template v-else-if="column.key === 'active'">
             <a-tag :color="record.active ? 'green' : 'red'">
               {{ record.active ? 'Có' : 'Không' }}
             </a-tag>
           </template>
+          
+          <!-- Actions column -->
+          <template v-else-if="column.key === 'actions'">
+            <template v-if="editingRow === record.id">
+              <a-space>
+                <a-button type="primary" size="small" @click="saveChanges(record.id)">
+                  <SaveOutlined /> Lưu
+                </a-button>
+                <a-button size="small" @click="cancelEdit">
+                  <CloseOutlined /> Huỷ
+                </a-button>
+              </a-space>
+            </template>
+            <template v-else>
+              <a-button type="primary" size="small" @click="startEdit(record)">
+                <EditOutlined /> Sửa
+              </a-button>
+            </template>
+          </template>
+          
           <template v-else>
             {{ text }}
           </template>
@@ -81,24 +151,81 @@
       title="Thông tin tuỳ biến"
       :footer="null"
       width="700px"
+      :mask-closable="false"
+      @cancel="cancelJsonEdit"
     >
+      <div class="mb-4">
+        <a-alert
+          v-if="jsonEditing"
+          type="info"
+          message="Đang chỉnh sửa thông tin tuỳ biến"
+          description="Hãy chỉnh sửa giá trị và nhấn 'Lưu thay đổi' để cập nhật."
+          show-icon
+          class="mb-3"
+        />
+        <a-space class="mb-3">
+          <a-button type="primary" v-if="jsonEditing" @click="saveJsonChanges">
+            <SaveOutlined /> Lưu thay đổi
+          </a-button>
+          <a-button type="primary" v-else @click="enableJsonEdit">
+            <EditOutlined /> Chỉnh sửa
+          </a-button>
+          <a-button @click="cancelJsonEdit">
+            <CloseOutlined /> {{ jsonEditing ? 'Huỷ' : 'Đóng' }}
+          </a-button>
+        </a-space>
+      </div>
+      
       <a-table
         :dataSource="jsonTableData"
-        :columns="jsonColumns"
+        :columns="jsonEditingColumns"
         :pagination="false"
         size="small"
         bordered
-      />
+      >
+        <template #bodyCell="{ column, text, record }">
+          <template v-if="column.key === 'value'">
+            <a-input v-if="jsonEditing" v-model:value="record.value" />
+            <span v-else>{{ text }}</span>
+          </template>
+          <template v-else-if="column.key === 'actions' && jsonEditing">
+            <a-space>
+              <a-button 
+                size="small" 
+                type="primary" 
+                @click="saveJsonRowChange(record)"
+                :disabled="!isJsonRowChanged(record)"
+              >
+                <SaveOutlined />
+              </a-button>
+              <a-button 
+                size="small" 
+                danger 
+                @click="resetJsonRow(record)"
+                :disabled="!isJsonRowChanged(record)"
+              >
+                <UndoOutlined />
+              </a-button>
+            </a-space>
+          </template>
+        </template>
+      </a-table>
     </a-modal>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, reactive } from 'vue'
 import { message } from 'ant-design-vue'
-import { FilePdfOutlined } from '@ant-design/icons-vue'
+import { 
+  FilePdfOutlined, 
+  EditOutlined, 
+  SaveOutlined, 
+  CloseOutlined,
+  UndoOutlined
+} from '@ant-design/icons-vue'
 // const CONST_HOST = "http://localhost:8080"
-const CONST_HOST = "https://id.slmsolar.com"
+const CONST_HOST = "https://api.slmglobal.vn"
 
 const props = defineProps({
     merchandises: {
@@ -121,6 +248,15 @@ const isLoading = ref(false)
 const searchKeyword = ref('')
 const selectedGroup = ref(props.defaultGroup || 'all')
 const selectedBrand = ref('all')
+
+// Editing state
+const editingRow = ref(null)
+const editingData = ref({})
+const originalData = ref({})
+const currentJsonRecord = ref(null)
+const jsonEditing = ref(false)
+const originalJsonData = ref({})
+const originalJsonTableData = ref([])
 
 // Pagination config
 const tablePagination = {
@@ -174,21 +310,35 @@ const filteredData = computed(() => {
   return filtered
 })
 
-// Columns for JSON data modal
-const jsonColumns = [
-  {
-    title: 'Thuộc tính',
-    dataIndex: 'key',
-    key: 'key',
-    width: '40%',
-  },
-  {
-    title: 'Giá trị',
-    dataIndex: 'value',
-    key: 'value',
-    width: '60%',
+// Columns for JSON data modal with row actions
+const jsonEditingColumns = computed(() => {
+  const baseColumns = [
+    {
+      title: 'Thuộc tính',
+      dataIndex: 'key',
+      key: 'key',
+      width: '35%',
+    },
+    {
+      title: 'Giá trị',
+      dataIndex: 'value',
+      key: 'value',
+      width: '50%',
+    }
+  ]
+  
+  // Add actions column when in edit mode
+  if (jsonEditing.value) {
+    baseColumns.push({
+      title: 'Thao tác',
+      key: 'actions',
+      width: '15%',
+      align: 'center'
+    })
   }
-]
+  
+  return baseColumns
+})
 
 // Format date for better display
 const formatDate = (dateString) => {
@@ -212,17 +362,260 @@ const formatDate = (dateString) => {
   }
 }
 
-const showJsonModal = (jsonData) => {
-  const parsedData = formatJsonData(jsonData)
+// Start editing a row
+const startEdit = (record) => {
+  // Deep clone the record to preserve original data
+  originalData.value = JSON.parse(JSON.stringify(record))
+  
+  editingData.value = {
+    name: record.name,
+    data_sheet_link: record.data_sheet_link || '',
+    unit: record.unit || '',
+    description_in_contract: record.description_in_contract || '',
+    description_in_quotation: record.description_in_quotation || '',
+    data_json: record.data_json || '{}'
+  }
+  
+  editingRow.value = record.id
+}
+
+// Cancel editing
+const cancelEdit = () => {
+  editingRow.value = null
+  editingData.value = {}
+  originalData.value = {}
+}
+
+// Save changes to a row
+const saveChanges = async (recordId) => {
+  try {
+    isLoading.value = true
+    
+    // Prepare data for API
+    const updatedData = {
+      name: editingData.value.name,
+      data_sheet_link: editingData.value.data_sheet_link,
+      unit: editingData.value.unit,
+      description_in_contract: editingData.value.description_in_contract,
+      description_in_quotation: editingData.value.description_in_quotation,
+      // Keep the data_json intact unless it was explicitly changed in the JSON editor
+      data_json: typeof editingData.value.data_json === 'string' 
+        ? JSON.parse(editingData.value.data_json) 
+        : editingData.value.data_json
+    }
+    
+    // Call API to update merchandise
+    const response = await fetch(`${CONST_HOST}/api/products/${recordId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(updatedData)
+    })
+    console.log(recordId);
+    if (response.ok) {
+      message.success('Cập nhật sản phẩm thành công')
+      
+      // Update local data
+      const index = localMerchandises.value.findIndex(item => item.id === recordId)
+      if (index !== -1) {
+        const updatedRecord = {
+          ...localMerchandises.value[index],
+          ...updatedData
+        }
+        localMerchandises.value[index] = updatedRecord
+      }
+      
+      // Exit edit mode
+      editingRow.value = null
+    } else {
+      const errorData = await response.json()
+      message.error(`Lỗi: ${errorData.detail || 'Không thể cập nhật sản phẩm'}`)
+    }
+  } catch (error) {
+    console.error('Error saving changes:', error)
+    message.error('Có lỗi xảy ra khi cập nhật sản phẩm')
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Show JSON modal
+const showJsonModal = (record) => {
+  currentJsonRecord.value = record
+  jsonEditing.value = false
+  
+  // Parse and display JSON data
+  const parsedData = formatJsonData(record.data_json)
+  originalJsonData.value = { ...parsedData }
+  
+  // Create table data with original values for each row
   const tableData = Object.entries(parsedData).map(([key, value]) => {
+    const formattedValue = Array.isArray(value) ? value.join(', ') : String(value || '-')
     return {
       key: formatKey(key),
-      value: Array.isArray(value) ? value.join(', ') : String(value || '-')
+      original_key: key, // Keep original key for updating
+      value: formattedValue,
+      original_value: formattedValue // Store original value for reset functionality
     }
   })
 
   jsonTableData.value = tableData
+  originalJsonTableData.value = JSON.parse(JSON.stringify(tableData)) // Deep clone for reset
   jsonModalVisible.value = true
+}
+
+// Check if a JSON row has been changed
+const isJsonRowChanged = (record) => {
+  const originalRow = originalJsonTableData.value.find(item => item.original_key === record.original_key)
+  return originalRow && originalRow.value !== record.value
+}
+
+// Reset a single JSON row to its original value
+const resetJsonRow = (record) => {
+  const originalRow = originalJsonTableData.value.find(item => item.original_key === record.original_key)
+  if (originalRow) {
+    record.value = originalRow.value
+  }
+}
+
+// Save changes for a single JSON row
+const saveJsonRowChange = async (record) => {
+  try {
+    if (!currentJsonRecord.value) return
+    
+    isLoading.value = true
+    
+    // Create updated JSON data from the current state of the table data
+    const updatedJsonData = {}
+    jsonTableData.value.forEach(item => {
+      updatedJsonData[item.original_key] = item.value
+    })
+    
+    // Prepare data for API
+    const updatedData = {
+      name: currentJsonRecord.value.name,
+      data_sheet_link: currentJsonRecord.value.data_sheet_link,
+      unit: currentJsonRecord.value.unit,
+      description_in_contract: currentJsonRecord.value.description_in_contract,
+      description_in_quotation: currentJsonRecord.value.description_in_quotation,
+      data_json: updatedJsonData
+    }
+    
+    // Call API to update merchandise
+    const response = await fetch(`${CONST_HOST}/api/products/${currentJsonRecord.value.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(updatedData)
+    })
+    
+    if (response.ok) {
+      message.success(`Cập nhật thành công thuộc tính: ${record.key}`)
+      
+      // Update local data
+      const index = localMerchandises.value.findIndex(item => item.id === currentJsonRecord.value.id)
+      if (index !== -1) {
+        localMerchandises.value[index].data_json = JSON.stringify(updatedJsonData)
+      }
+      
+      // Update original data for this row
+      const originalIndex = originalJsonTableData.value.findIndex(item => 
+        item.original_key === record.original_key
+      )
+      if (originalIndex !== -1) {
+        originalJsonTableData.value[originalIndex].value = record.value
+      }
+      
+      // Update originalJsonData for future reference
+      originalJsonData.value = { ...updatedJsonData }
+    } else {
+      const errorData = await response.json()
+      message.error(`Lỗi: ${errorData.detail || 'Không thể cập nhật thuộc tính'}`)
+    }
+  } catch (error) {
+    console.error('Error saving JSON row change:', error)
+    message.error('Có lỗi xảy ra khi cập nhật thuộc tính')
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Enable JSON editing
+const enableJsonEdit = () => {
+  jsonEditing.value = true
+}
+
+// Cancel JSON edit
+const cancelJsonEdit = () => {
+  if (jsonEditing.value) {
+    // Reset to original data
+    jsonTableData.value = JSON.parse(JSON.stringify(originalJsonTableData.value))
+    jsonEditing.value = false
+  } else {
+    jsonModalVisible.value = false
+    currentJsonRecord.value = null
+  }
+}
+
+// Save all JSON changes
+const saveJsonChanges = async () => {
+  try {
+    if (!currentJsonRecord.value) return
+    
+    isLoading.value = true
+    
+    // Convert table data back to JSON object
+    const updatedJsonData = {}
+    jsonTableData.value.forEach(item => {
+      updatedJsonData[item.original_key] = item.value
+    })
+    
+    // Prepare data for API
+    const updatedData = {
+      name: currentJsonRecord.value.name,
+      data_sheet_link: currentJsonRecord.value.data_sheet_link,
+      unit: currentJsonRecord.value.unit,
+      description_in_contract: currentJsonRecord.value.description_in_contract,
+      description_in_quotation: currentJsonRecord.value.description_in_quotation,
+      data_json: updatedJsonData
+    }
+    
+    // Call API to update merchandise
+    const response = await fetch(`${CONST_HOST}/api/products/${currentJsonRecord.value.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(updatedData)
+    })
+    
+    if (response.ok) {
+      message.success('Cập nhật thông tin tuỳ biến thành công')
+      
+      // Update local data
+      const index = localMerchandises.value.findIndex(item => item.id === currentJsonRecord.value.id)
+      if (index !== -1) {
+        localMerchandises.value[index].data_json = JSON.stringify(updatedJsonData)
+      }
+      
+      // Update original data for all rows
+      originalJsonTableData.value = JSON.parse(JSON.stringify(jsonTableData.value))
+      originalJsonData.value = { ...updatedJsonData }
+      
+      // Exit edit mode but keep modal open
+      jsonEditing.value = false
+    } else {
+      const errorData = await response.json()
+      message.error(`Lỗi: ${errorData.detail || 'Không thể cập nhật thông tin tuỳ biến'}`)
+    }
+  } catch (error) {
+    console.error('Error saving JSON changes:', error)
+    message.error('Có lỗi xảy ra khi cập nhật thông tin tuỳ biến')
+  } finally {
+    isLoading.value = false
+  }
 }
 
 // Event handlers
@@ -231,6 +624,11 @@ const handleFiltersChange = () => {
   // Currently the computed property handles the filtering automatically
 }
 
+const handleTableChange = (pagination, filters, sorter) => {
+  // Handle table change events if needed
+}
+
+// Table columns
 const columns = [
   {
     title: 'ID',
@@ -270,7 +668,13 @@ const columns = [
     title: 'Mô tả trong hợp đồng',
     dataIndex: 'description_in_contract',
     key: 'description_in_contract',
-    width: 330,
+    width: 250,
+  },
+  {
+    title: 'Mô tả trong báo giá',
+    dataIndex: 'description_in_quotation',
+    key: 'description_in_quotation',
+    width: 250,
   },
   {
     title: 'Thông tin tuỳ biến',
@@ -290,8 +694,15 @@ const columns = [
     title: 'Active',
     dataIndex: 'active',
     key: 'active',
+    width: 80,
+    align: 'center',
+  },
+  {
+    title: 'Thao tác',
+    key: 'actions',
     width: 100,
     align: 'center',
+    fixed: 'right'
   }
 ]
 
