@@ -109,9 +109,18 @@
           
           <!-- Active status column -->
           <template v-else-if="column.key === 'active'">
-            <a-tag :color="record.active ? 'green' : 'red'">
-              {{ record.active ? 'Có' : 'Không' }}
-            </a-tag>
+            <div v-if="editingRow === record.id">
+              <a-switch 
+                v-model:checked="editingData.active" 
+                :checked-children="'Có'" 
+                :un-checked-children="'Không'" 
+              />
+            </div>
+            <template v-else>
+              <a-tag :color="record.active ? 'green' : 'red'">
+                {{ record.active ? 'Có' : 'Không' }}
+              </a-tag>
+            </template>
           </template>
           
           <!-- Actions column -->
@@ -373,7 +382,8 @@ const startEdit = (record) => {
     unit: record.unit || '',
     description_in_contract: record.description_in_contract || '',
     description_in_quotation: record.description_in_quotation || '',
-    data_json: record.data_json || '{}'
+    data_json: record.data_json || '{}',
+    active: !!record.active // Add active state to editingData
   }
   
   editingRow.value = record.id
@@ -401,7 +411,8 @@ const saveChanges = async (recordId) => {
       // Keep the data_json intact unless it was explicitly changed in the JSON editor
       data_json: typeof editingData.value.data_json === 'string' 
         ? JSON.parse(editingData.value.data_json) 
-        : editingData.value.data_json
+        : editingData.value.data_json,
+      active: editingData.value.active // Include active status in the update
     }
     
     // Call API to update merchandise
@@ -412,7 +423,7 @@ const saveChanges = async (recordId) => {
       },
       body: JSON.stringify(updatedData)
     })
-    console.log(recordId);
+    
     if (response.ok) {
       message.success('Cập nhật sản phẩm thành công')
       
@@ -499,7 +510,8 @@ const saveJsonRowChange = async (record) => {
       unit: currentJsonRecord.value.unit,
       description_in_contract: currentJsonRecord.value.description_in_contract,
       description_in_quotation: currentJsonRecord.value.description_in_quotation,
-      data_json: updatedJsonData
+      data_json: updatedJsonData,
+      active: currentJsonRecord.value.active // Include active status in the update
     }
     
     // Call API to update merchandise
@@ -579,7 +591,8 @@ const saveJsonChanges = async () => {
       unit: currentJsonRecord.value.unit,
       description_in_contract: currentJsonRecord.value.description_in_contract,
       description_in_quotation: currentJsonRecord.value.description_in_quotation,
-      data_json: updatedJsonData
+      data_json: updatedJsonData,
+      active: currentJsonRecord.value.active // Include active status in the update
     }
     
     // Call API to update merchandise
