@@ -4,12 +4,8 @@
     <div class="filter-section mb-4">
       <a-row :gutter="[16, 16]" align="middle" class="mb-3">
         <a-col :span="12" :md="8" :lg="6">
-          <a-select
-            v-model:value="selectedBrand"
-            style="width: 100%"
-            placeholder="Chọn thương hiệu"
-            @change="handleFiltersChange"
-          >
+          <a-select v-model:value="selectedBrand" style="width: 100%" placeholder="Chọn thương hiệu"
+            @change="handleFiltersChange">
             <a-select-option value="all">Tất cả thương hiệu</a-select-option>
             <a-select-option v-for="brand in uniqueBrands" :key="brand.id" :value="brand.id">
               {{ brand.name }}
@@ -17,13 +13,8 @@
           </a-select>
         </a-col>
         <a-col :span="24" :md="8" :lg="6">
-          <a-input-search
-            v-model:value="searchKeyword"
-            placeholder="Tìm kiếm theo tên, mã sản phẩm"
-            @change="handleFiltersChange"
-            @search="handleFiltersChange"
-            allow-clear
-          />
+          <a-input-search v-model:value="searchKeyword" placeholder="Tìm kiếm theo tên, mã sản phẩm"
+            @change="handleFiltersChange" @search="handleFiltersChange" allow-clear />
         </a-col>
         <a-col :span="24" :md="24" :lg="12" class="text-right">
           <a-tag v-if="filteredData.length">Hiển thị {{ filteredData.length }} mục</a-tag>
@@ -33,18 +24,9 @@
 
     <!-- Table data -->
     <div class="merchandise-table-container">
-      <a-table
-        class="responsive-table"
-        :columns="columns"
-        :data-source="filteredData"
-        :rowKey="(record) => record.id"
-        :scroll="{ x: '100%', y: 600 }"
-        :pagination="tablePagination"
-        bordered
-        size="middle"
-        :loading="isLoading"
-        @change="handleTableChange"
-      >
+      <a-table class="responsive-table" :columns="columns" :data-source="filteredData" :rowKey="(record) => record.id"
+        :scroll="{ x: '100%', y: 600 }" :pagination="tablePagination" bordered size="middle" :loading="isLoading"
+        @change="handleTableChange">
         <template #bodyCell="{ column, text, record, index }">
           <!-- Name column -->
           <template v-if="column.key === 'name'">
@@ -53,7 +35,7 @@
             </div>
             <template v-else>{{ text }}</template>
           </template>
-          
+
           <!-- Data sheet link column -->
           <template v-else-if="column.key === 'data_sheet_link'">
             <div v-if="editingRow === record.id">
@@ -66,7 +48,7 @@
               <span v-else>-</span>
             </template>
           </template>
-          
+
           <!-- Unit column -->
           <template v-else-if="column.key === 'unit'">
             <div v-if="editingRow === record.id">
@@ -74,47 +56,38 @@
             </div>
             <template v-else>{{ text }}</template>
           </template>
-          
+
           <!-- Description in contract column -->
           <template v-else-if="column.key === 'description_in_contract'">
             <div v-if="editingRow === record.id">
-              <a-textarea 
-                v-model:value="editingData.description_in_contract" 
-                :auto-size="{ minRows: 2, maxRows: 6 }" 
-              />
+              <a-textarea v-model:value="editingData.description_in_contract" :auto-size="{ minRows: 2, maxRows: 6 }" />
             </div>
             <template v-else>{{ text }}</template>
           </template>
-          
+
           <!-- Description in quotation column -->
           <template v-else-if="column.key === 'description_in_quotation'">
             <div v-if="editingRow === record.id">
-              <a-textarea 
-                v-model:value="editingData.description_in_quotation" 
-                :auto-size="{ minRows: 2, maxRows: 6 }" 
-              />
+              <a-textarea v-model:value="editingData.description_in_quotation"
+                :auto-size="{ minRows: 2, maxRows: 6 }" />
             </div>
             <template v-else>{{ text }}</template>
           </template>
-          
+
           <!-- Custom data column -->
           <template v-else-if="column.key === 'data_json'">
             <a-button type="link" size="small" @click="showJsonModal(record)">Xem chi tiết</a-button>
           </template>
-          
+
           <!-- Created at column -->
           <template v-else-if="column.key === 'created_at'">
             {{ formatDate(text) }}
           </template>
-          
+
           <!-- Active status column -->
           <template v-else-if="column.key === 'active'">
             <div v-if="editingRow === record.id">
-              <a-switch 
-                v-model:checked="editingData.active" 
-                :checked-children="'Có'" 
-                :un-checked-children="'Không'" 
-              />
+              <a-switch v-model:checked="editingData.active" :checked-children="'Có'" :un-checked-children="'Không'" />
             </div>
             <template v-else>
               <a-tag :color="record.active ? 'green' : 'red'">
@@ -122,7 +95,7 @@
               </a-tag>
             </template>
           </template>
-          
+
           <!-- Actions column -->
           <template v-else-if="column.key === 'actions'">
             <template v-if="editingRow === record.id">
@@ -136,12 +109,29 @@
               </a-space>
             </template>
             <template v-else>
-              <a-button type="primary" size="small" @click="startEdit(record)">
-                <EditOutlined /> Sửa
-              </a-button>
+              <a-space>
+                <a-button type="primary" size="small" @click="startEdit(record)">
+                  <EditOutlined /> Sửa
+                </a-button>
+                <a-dropdown>
+                  <a-button size="small">
+                    Giá
+                  </a-button>
+                  <template #overlay>
+                    <a-menu>
+                      <a-menu-item key="2" @click="showPriceHistoryModal(record)">
+                        Lịch sử giá
+                      </a-menu-item>
+                      <a-menu-item key="3" @click="addNewPrice(record.id)">
+                        Thêm giá mới
+                      </a-menu-item>
+                    </a-menu>
+                  </template>
+                </a-dropdown>
+              </a-space>
             </template>
           </template>
-          
+
           <template v-else>
             {{ text }}
           </template>
@@ -155,23 +145,11 @@
     </div>
 
     <!-- Modal for JSON data -->
-    <a-modal
-      v-model:visible="jsonModalVisible"
-      title="Thông tin tuỳ biến"
-      :footer="null"
-      width="700px"
-      :mask-closable="false"
-      @cancel="cancelJsonEdit"
-    >
+    <a-modal v-model:visible="jsonModalVisible" title="Thông tin tuỳ biến" :footer="null" width="700px"
+      :mask-closable="false" @cancel="cancelJsonEdit">
       <div class="mb-4">
-        <a-alert
-          v-if="jsonEditing"
-          type="info"
-          message="Đang chỉnh sửa thông tin tuỳ biến"
-          description="Hãy chỉnh sửa giá trị và nhấn 'Lưu thay đổi' để cập nhật."
-          show-icon
-          class="mb-3"
-        />
+        <a-alert v-if="jsonEditing" type="info" message="Đang chỉnh sửa thông tin tuỳ biến"
+          description="Hãy chỉnh sửa giá trị và nhấn 'Lưu thay đổi' để cập nhật." show-icon class="mb-3" />
         <a-space class="mb-3">
           <a-button type="primary" v-if="jsonEditing" @click="saveJsonChanges">
             <SaveOutlined /> Lưu thay đổi
@@ -184,14 +162,8 @@
           </a-button>
         </a-space>
       </div>
-      
-      <a-table
-        :dataSource="jsonTableData"
-        :columns="jsonEditingColumns"
-        :pagination="false"
-        size="small"
-        bordered
-      >
+
+      <a-table :dataSource="jsonTableData" :columns="jsonEditingColumns" :pagination="false" size="small" bordered>
         <template #bodyCell="{ column, text, record }">
           <template v-if="column.key === 'value'">
             <a-input v-if="jsonEditing" v-model:value="record.value" />
@@ -199,20 +171,11 @@
           </template>
           <template v-else-if="column.key === 'actions' && jsonEditing">
             <a-space>
-              <a-button 
-                size="small" 
-                type="primary" 
-                @click="saveJsonRowChange(record)"
-                :disabled="!isJsonRowChanged(record)"
-              >
+              <a-button size="small" type="primary" @click="saveJsonRowChange(record)"
+                :disabled="!isJsonRowChanged(record)">
                 <SaveOutlined />
               </a-button>
-              <a-button 
-                size="small" 
-                danger 
-                @click="resetJsonRow(record)"
-                :disabled="!isJsonRowChanged(record)"
-              >
+              <a-button size="small" danger @click="resetJsonRow(record)" :disabled="!isJsonRowChanged(record)">
                 <UndoOutlined />
               </a-button>
             </a-space>
@@ -220,33 +183,62 @@
         </template>
       </a-table>
     </a-modal>
+
+    <!-- Modal lịch sử giá -->
+    <a-modal v-model:visible="priceHistoryModalVisible" title="Lịch sử giá" :footer="null" width="700px"
+      :mask-closable="false">
+      <div class="mb-4">
+        <a-space>
+          <a-button type="primary" @click="addNewPrice(currentPriceRecord?.id)">
+            <PlusOutlined /> Thêm giá mới
+          </a-button>
+        </a-space>
+      </div>
+      <a-table :dataSource="priceHistoryData" :columns="priceHistoryColumns" :pagination="{ pageSize: 5 }" size="small"
+        bordered>
+        <template #bodyCell="{ column, text }">
+          <template v-if="column.key === 'import_price_include_vat'">
+            {{ formatPrice(text) }} VNĐ
+          </template>
+          <template v-else-if="column.key === 'created_at'">
+            {{ formatDate(text) }}
+          </template>
+        </template>
+        <template #emptyText>
+          <div class="empty-data">
+            <p>Chưa có thông tin giá</p>
+          </div>
+        </template>
+      </a-table>
+    </a-modal>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch, reactive } from 'vue'
-import { message } from 'ant-design-vue'
-import { 
-  FilePdfOutlined, 
-  EditOutlined, 
-  SaveOutlined, 
+import { ref, computed, onMounted, watch, reactive, h } from 'vue'
+import { message, Modal  } from 'ant-design-vue'
+import {
+  FilePdfOutlined,
+  EditOutlined,
+  SaveOutlined,
   CloseOutlined,
-  UndoOutlined
+  UndoOutlined,
+  PlusOutlined
 } from '@ant-design/icons-vue'
 // const CONST_HOST = "http://localhost:8080"
 const CONST_HOST = "https://api.slmglobal.vn"
 
 const props = defineProps({
-    merchandises: {
-        type: Array,
-        required: false,
-        default: () => []
-    },
-    defaultGroup: {
-        type: String,
-        required: false,
-        default: 'all'
-    }
+  merchandises: {
+    type: Array,
+    required: false,
+    default: () => []
+  },
+  defaultGroup: {
+    type: String,
+    required: false,
+    default: 'all'
+  }
 })
 
 // State variables
@@ -267,6 +259,12 @@ const jsonEditing = ref(false)
 const originalJsonData = ref({})
 const originalJsonTableData = ref([])
 
+
+// Thêm các biến trạng thái cho modal lịch sử giá
+const priceHistoryModalVisible = ref(false)
+const priceHistoryData = ref([])
+const currentPriceRecord = ref(null)
+
 // Pagination config
 const tablePagination = {
   pageSize: 10,
@@ -275,6 +273,208 @@ const tablePagination = {
   showTotal: (total) => `Tổng số ${total} mục`,
   position: ['bottomCenter'],
   className: 'centered-pagination'
+}
+// Định nghĩa cột cho bảng lịch sử giá
+const priceHistoryColumns = [
+  {
+    title: 'STT',
+    key: 'index',
+    width: '60px',
+    align: 'center',
+    customRender: ({ index }) => index + 1
+  },
+  {
+    title: 'Giá nhập (bao gồm VAT)',
+    dataIndex: 'import_price_include_vat',
+    key: 'import_price_include_vat',
+    width: '200px',
+    align: 'right'
+  },
+  {
+    title: 'Ngày tạo',
+    dataIndex: 'created_at',
+    key: 'created_at',
+    width: '150px',
+    align: 'center'
+  }
+]
+
+// Hàm định dạng giá tiền
+const formatPrice = (price) => {
+  if (price === null || price === undefined) return '-'
+  return new Intl.NumberFormat('vi-VN').format(price)
+}
+
+// Hàm hiển thị modal lịch sử giá
+const showPriceHistoryModal = (record) => {
+  currentPriceRecord.value = record
+
+  // Định dạng và sắp xếp dữ liệu lịch sử giá (mới nhất lên đầu)
+  if (record.price_infos && record.price_infos.length > 0) {
+    priceHistoryData.value = [...record.price_infos]
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+  } else {
+    priceHistoryData.value = []
+  }
+
+  priceHistoryModalVisible.value = true
+}
+
+// Hàm thêm giá mới
+const addNewPrice = async (merchandiseId) => {
+  try {
+    // Tạo biến để lưu giá trị và kiểm tra tính hợp lệ
+    let inputValue = '';
+    let isValidPrice = false;
+
+    // Sử dụng Modal.confirm để hiển thị dialog
+    Modal.confirm({
+      title: 'Thêm giá mới',
+      icon: h(PlusOutlined),
+      width: 500,
+      // Sử dụng template với render function thay vì content và input thường thay vì a-input-number
+      content: h('div', [
+        h('div', { style: 'margin-bottom: 16px;' }, [
+          h('span', { style: 'display: block; margin-bottom: 8px;' }, 'Giá nhập (bao gồm VAT):'),
+          h('div', { class: 'price-input-container', style: 'position: relative;' }, [
+            h('input', {
+              type: 'text',
+              class: 'price-input',
+              style: 'width: 100%; padding: 8px; border: 1px solid #d9d9d9; border-radius: 2px; box-sizing: border-box;',
+              placeholder: 'Nhập giá',
+              value: inputValue,
+              oninput: (e) => {
+                // Lấy chỉ số ký tự và vị trí con trỏ trước khi thay đổi giá trị
+                const cursorPos = e.target.selectionStart;
+                const oldLength = e.target.value.length;
+                
+                // Chỉ giữ lại các ký tự số
+                const numericValue = e.target.value.replace(/[^\d]/g, '');
+                
+                if (numericValue) {
+                  // Format số với dấu phân cách hàng nghìn
+                  const formattedValue = Number(numericValue).toLocaleString('vi-VN');
+                  e.target.value = formattedValue;
+                  
+                  // Điều chỉnh vị trí con trỏ sau khi format
+                  const newLength = formattedValue.length;
+                  const newPosition = cursorPos + (newLength - oldLength);
+                  
+                  // Đặt lại vị trí con trỏ sau khi cập nhật giá trị
+                  setTimeout(() => {
+                    e.target.setSelectionRange(
+                      Math.max(0, Math.min(newPosition, newLength)),
+                      Math.max(0, Math.min(newPosition, newLength))
+                    );
+                  }, 0);
+                  
+                  // Cập nhật biến kiểm tra giá
+                  inputValue = formattedValue;
+                  isValidPrice = Number(numericValue) > 0;
+                } else {
+                  e.target.value = '';
+                  inputValue = '';
+                  isValidPrice = false;
+                }
+              }
+            }),
+            h('div', {
+              class: 'price-validation-message',
+              style: 'color: #ff4d4f; font-size: 12px; margin-top: 4px; min-height: 18px;'
+            })
+          ])
+        ])
+      ]),
+      // Tuỳ chỉnh nút xác nhận và huỷ
+      okText: 'Xác nhận',
+      cancelText: 'Huỷ',
+      async onOk() {
+        const inputEl = document.querySelector('.ant-modal-body .price-input');
+        const validationMsg = document.querySelector('.ant-modal-body .price-validation-message');
+        
+        // Lấy giá trị đã nhập (xóa dấu phẩy ngăn cách)
+        const price = inputEl ? inputEl.value.replace(/\./g, '').trim() : null;
+        
+        // Kiểm tra giá trị hợp lệ
+        if (!price || isNaN(price) || parseFloat(price) <= 0) {
+          if (validationMsg) {
+            validationMsg.textContent = 'Vui lòng nhập giá hợp lệ lớn hơn 0';
+          } else {
+            message.error('Vui lòng nhập giá hợp lệ lớn hơn 0');
+          }
+          return Promise.reject();
+        }
+
+        isLoading.value = true;
+        try {
+          // Gọi API để thêm giá mới
+          const response = await fetch(`${CONST_HOST}/api/products/${merchandiseId}/price`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              merchandise_id: merchandiseId,
+              import_price_include_vat: parseFloat(price)
+            })
+          });
+
+          if (response.ok) {
+            message.success('Thêm giá mới thành công');
+            // Tải lại dữ liệu sản phẩm để có thông tin giá mới nhất
+            await loadMerchandiseById(merchandiseId);
+            // Nếu modal lịch sử giá đang mở, cập nhật lại dữ liệu
+            if (priceHistoryModalVisible.value && currentPriceRecord.value && currentPriceRecord.value.id === merchandiseId) {
+              showPriceHistoryModal(
+                localMerchandises.value.find(item => item.id === merchandiseId)
+              );
+            }
+            return Promise.resolve();
+          } else {
+            const errorData = await response.json();
+            message.error(`Lỗi: ${errorData.detail || 'Không thể thêm giá mới'}`);
+            return Promise.reject();
+          }
+        } catch (error) {
+          console.error('Error adding new price:', error);
+          message.error('Có lỗi xảy ra khi thêm giá mới');
+          return Promise.reject();
+        } finally {
+          isLoading.value = false;
+        }
+      },
+      onCancel() {
+        return Promise.resolve();
+      }
+    });
+  } catch (error) {
+    console.error('Error showing price input dialog:', error);
+    message.error('Có lỗi xảy ra');
+  }
+}
+// Hàm tải lại thông tin một sản phẩm theo ID
+const loadMerchandiseById = async (merchandiseId) => {
+  try {
+    isLoading.value = true
+    const response = await fetch(`${CONST_HOST}/api/products/${merchandiseId}`)
+
+    if (response.ok) {
+      const updatedMerchandise = await response.json()
+
+      // Cập nhật sản phẩm trong mảng dữ liệu local
+      const index = localMerchandises.value.findIndex(item => item.id === merchandiseId)
+      if (index !== -1) {
+        localMerchandises.value[index] = updatedMerchandise
+      }
+    } else {
+      message.error('Không thể tải thông tin sản phẩm')
+    }
+  } catch (error) {
+    console.error('Error loading merchandise by ID:', error)
+    message.error('Có lỗi xảy ra khi tải dữ liệu')
+  } finally {
+    isLoading.value = false
+  }
 }
 
 // Unique brands list for filter
@@ -335,7 +535,7 @@ const jsonEditingColumns = computed(() => {
       width: '50%',
     }
   ]
-  
+
   // Add actions column when in edit mode
   if (jsonEditing.value) {
     baseColumns.push({
@@ -345,7 +545,7 @@ const jsonEditingColumns = computed(() => {
       align: 'center'
     })
   }
-  
+
   return baseColumns
 })
 
@@ -375,7 +575,7 @@ const formatDate = (dateString) => {
 const startEdit = (record) => {
   // Deep clone the record to preserve original data
   originalData.value = JSON.parse(JSON.stringify(record))
-  
+
   editingData.value = {
     name: record.name,
     data_sheet_link: record.data_sheet_link || '',
@@ -385,7 +585,7 @@ const startEdit = (record) => {
     data_json: record.data_json || '{}',
     active: !!record.active // Add active state to editingData
   }
-  
+
   editingRow.value = record.id
 }
 
@@ -400,7 +600,7 @@ const cancelEdit = () => {
 const saveChanges = async (recordId) => {
   try {
     isLoading.value = true
-    
+
     // Prepare data for API
     const updatedData = {
       name: editingData.value.name,
@@ -409,12 +609,12 @@ const saveChanges = async (recordId) => {
       description_in_contract: editingData.value.description_in_contract,
       description_in_quotation: editingData.value.description_in_quotation,
       // Keep the data_json intact unless it was explicitly changed in the JSON editor
-      data_json: typeof editingData.value.data_json === 'string' 
-        ? JSON.parse(editingData.value.data_json) 
+      data_json: typeof editingData.value.data_json === 'string'
+        ? JSON.parse(editingData.value.data_json)
         : editingData.value.data_json,
       active: editingData.value.active // Include active status in the update
     }
-    
+
     // Call API to update merchandise
     const response = await fetch(`${CONST_HOST}/api/products/${recordId}`, {
       method: 'PUT',
@@ -423,10 +623,10 @@ const saveChanges = async (recordId) => {
       },
       body: JSON.stringify(updatedData)
     })
-    
+
     if (response.ok) {
       message.success('Cập nhật sản phẩm thành công')
-      
+
       // Update local data
       const index = localMerchandises.value.findIndex(item => item.id === recordId)
       if (index !== -1) {
@@ -436,7 +636,7 @@ const saveChanges = async (recordId) => {
         }
         localMerchandises.value[index] = updatedRecord
       }
-      
+
       // Exit edit mode
       editingRow.value = null
     } else {
@@ -455,11 +655,11 @@ const saveChanges = async (recordId) => {
 const showJsonModal = (record) => {
   currentJsonRecord.value = record
   jsonEditing.value = false
-  
+
   // Parse and display JSON data
   const parsedData = formatJsonData(record.data_json)
   originalJsonData.value = { ...parsedData }
-  
+
   // Create table data with original values for each row
   const tableData = Object.entries(parsedData).map(([key, value]) => {
     const formattedValue = Array.isArray(value) ? value.join(', ') : String(value || '-')
@@ -494,15 +694,15 @@ const resetJsonRow = (record) => {
 const saveJsonRowChange = async (record) => {
   try {
     if (!currentJsonRecord.value) return
-    
+
     isLoading.value = true
-    
+
     // Create updated JSON data from the current state of the table data
     const updatedJsonData = {}
     jsonTableData.value.forEach(item => {
       updatedJsonData[item.original_key] = item.value
     })
-    
+
     // Prepare data for API
     const updatedData = {
       name: currentJsonRecord.value.name,
@@ -513,7 +713,7 @@ const saveJsonRowChange = async (record) => {
       data_json: updatedJsonData,
       active: currentJsonRecord.value.active // Include active status in the update
     }
-    
+
     // Call API to update merchandise
     const response = await fetch(`${CONST_HOST}/api/products/${currentJsonRecord.value.id}`, {
       method: 'PUT',
@@ -522,24 +722,24 @@ const saveJsonRowChange = async (record) => {
       },
       body: JSON.stringify(updatedData)
     })
-    
+
     if (response.ok) {
       message.success(`Cập nhật thành công thuộc tính: ${record.key}`)
-      
+
       // Update local data
       const index = localMerchandises.value.findIndex(item => item.id === currentJsonRecord.value.id)
       if (index !== -1) {
         localMerchandises.value[index].data_json = JSON.stringify(updatedJsonData)
       }
-      
+
       // Update original data for this row
-      const originalIndex = originalJsonTableData.value.findIndex(item => 
+      const originalIndex = originalJsonTableData.value.findIndex(item =>
         item.original_key === record.original_key
       )
       if (originalIndex !== -1) {
         originalJsonTableData.value[originalIndex].value = record.value
       }
-      
+
       // Update originalJsonData for future reference
       originalJsonData.value = { ...updatedJsonData }
     } else {
@@ -575,15 +775,15 @@ const cancelJsonEdit = () => {
 const saveJsonChanges = async () => {
   try {
     if (!currentJsonRecord.value) return
-    
+
     isLoading.value = true
-    
+
     // Convert table data back to JSON object
     const updatedJsonData = {}
     jsonTableData.value.forEach(item => {
       updatedJsonData[item.original_key] = item.value
     })
-    
+
     // Prepare data for API
     const updatedData = {
       name: currentJsonRecord.value.name,
@@ -594,7 +794,7 @@ const saveJsonChanges = async () => {
       data_json: updatedJsonData,
       active: currentJsonRecord.value.active // Include active status in the update
     }
-    
+
     // Call API to update merchandise
     const response = await fetch(`${CONST_HOST}/api/products/${currentJsonRecord.value.id}`, {
       method: 'PUT',
@@ -603,20 +803,20 @@ const saveJsonChanges = async () => {
       },
       body: JSON.stringify(updatedData)
     })
-    
+
     if (response.ok) {
       message.success('Cập nhật thông tin tuỳ biến thành công')
-      
+
       // Update local data
       const index = localMerchandises.value.findIndex(item => item.id === currentJsonRecord.value.id)
       if (index !== -1) {
         localMerchandises.value[index].data_json = JSON.stringify(updatedJsonData)
       }
-      
+
       // Update original data for all rows
       originalJsonTableData.value = JSON.parse(JSON.stringify(jsonTableData.value))
       originalJsonData.value = { ...updatedJsonData }
-      
+
       // Exit edit mode but keep modal open
       jsonEditing.value = false
     } else {
@@ -713,7 +913,7 @@ const columns = [
   {
     title: 'Thao tác',
     key: 'actions',
-    width: 100,
+    width: 150,
     align: 'center',
     fixed: 'right'
   }
@@ -791,157 +991,157 @@ onMounted(() => {
 
 <style>
 .excel-table-container {
-    overflow-x: auto;
-    /* Cuộn ngang nếu nội dung quá rộng */
-    overflow-y: auto;
-    /* Cuộn dọc nếu nội dung quá cao */
-    max-height: 600px;
-    /* Giới hạn chiều cao của bảng (có thể tùy chỉnh) */
-    width: 100%;
-    max-width: 100%;
-    /* Chiếm toàn bộ chiều rộng */
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    position: relative;
-    /* Đảm bảo header cố định hoạt động đúng */
+  overflow-x: auto;
+  /* Cuộn ngang nếu nội dung quá rộng */
+  overflow-y: auto;
+  /* Cuộn dọc nếu nội dung quá cao */
+  max-height: 600px;
+  /* Giới hạn chiều cao của bảng (có thể tùy chỉnh) */
+  width: 100%;
+  max-width: 100%;
+  /* Chiếm toàn bộ chiều rộng */
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: relative;
+  /* Đảm bảo header cố định hoạt động đúng */
 }
 
 .excel-table {
-    border-collapse: collapse;
-    width: 100%;
-    /* Đảm bảo bảng chiếm toàn bộ chiều rộng container */
-    font-family: 'Segoe UI', Arial, sans-serif;
-    font-size: 14px;
-    table-layout: fixed;
+  border-collapse: collapse;
+  width: 100%;
+  /* Đảm bảo bảng chiếm toàn bộ chiều rộng container */
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-size: 14px;
+  table-layout: fixed;
 }
 
 thead {
-    position: sticky;
-    /* Giữ cố định header khi cuộn */
-    top: 0;
-    /* Cố định header ở đầu container */
-    z-index: 2;
-    /* Đảm bảo header nằm trên các nội dung khác */
-    background-color: #378a21;
-    /* Màu nền của header */
-    color: white;
-    /* Màu chữ của header */
+  position: sticky;
+  /* Giữ cố định header khi cuộn */
+  top: 0;
+  /* Cố định header ở đầu container */
+  z-index: 2;
+  /* Đảm bảo header nằm trên các nội dung khác */
+  background-color: #378a21;
+  /* Màu nền của header */
+  color: white;
+  /* Màu chữ của header */
 }
 
 .excel-header {
-    position: sticky;
-    top: 0;
-    background-color: #378a21;
-    color: white;
-    text-align: left;
-    padding: 8px;
-    border: 1px solid #bbb;
-    font-weight: bold;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    height: 32px;
-    box-sizing: border-box;
-    /* min-width: 50px;
+  position: sticky;
+  top: 0;
+  background-color: #378a21;
+  color: white;
+  text-align: left;
+  padding: 8px;
+  border: 1px solid #bbb;
+  font-weight: bold;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  height: 32px;
+  box-sizing: border-box;
+  /* min-width: 50px;
     max-width: 300px; */
 }
 
 .excel-header:hover {
-    background-color: #d9d9d9;
-    color: #333;
+  background-color: #d9d9d9;
+  color: #333;
 }
 
 .excel-cell {
-    padding: 6px 8px;
-    border: 1px solid #ddd;
-    max-width: 0;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    background-color: #fff;
-    height: 28px;
-    color: #333;
-    box-sizing: border-box;
+  padding: 6px 8px;
+  border: 1px solid #ddd;
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  background-color: #fff;
+  height: 28px;
+  color: #333;
+  box-sizing: border-box;
 }
 
 tr:nth-child(even) .excel-cell {
-    background-color: #f9f9f9;
+  background-color: #f9f9f9;
 }
 
 tr:hover .excel-cell {
-    background-color: #f0f5fc;
+  background-color: #f0f5fc;
 }
 
 .cell-content {
-    overflow-x: hidden;
-    white-space: nowrap;
-    max-width: 100%;
-    text-overflow: ellipsis;
+  overflow-x: hidden;
+  white-space: nowrap;
+  max-width: 100%;
+  text-overflow: ellipsis;
 }
 
 .excel-resizer {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 5px;
-    height: 100%;
-    cursor: col-resize;
-    z-index: 1;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 1;
 }
 
 .excel-resizer:hover,
 .resizing .excel-resizer {
-    background-color: #0078d7;
+  background-color: #0078d7;
 }
 
 .resizing {
-    background-color: #e6f2ff !important;
-    user-select: none;
+  background-color: #e6f2ff !important;
+  user-select: none;
 }
 
 .excel-table-container::-webkit-scrollbar {
-    width: 8px;
-    /* Độ rộng của scrollbar */
-    height: 8px;
-    /* Độ cao của scrollbar ngang */
+  width: 8px;
+  /* Độ rộng của scrollbar */
+  height: 8px;
+  /* Độ cao của scrollbar ngang */
 }
 
 .excel-table thead {
-    border-bottom: 2px solid #a9a9a9;
+  border-bottom: 2px solid #a9a9a9;
 }
 
 /* Add freezing header */
 thead {
-    position: sticky;
-    top: 0;
-    z-index: 2;
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 
 /* Add scrollbar styling */
 .excel-table-container::-webkit-scrollbar {
-    height: 10px;
-    width: 10px;
-    background: #f1f1f1;
+  height: 10px;
+  width: 10px;
+  background: #f1f1f1;
 }
 
 .excel-table-container::-webkit-scrollbar-track {
-    background: #f1f1f1;
+  background: #f1f1f1;
 }
 
 .excel-table-container::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 5px;
+  background: #c1c1c1;
+  border-radius: 5px;
 }
 
 .excel-table-container::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
+  background: #a8a8a8;
 }
 
 /* Add Excel-like selected state */
 .excel-cell.selected {
-    background-color: #e0ecff !important;
-    border: 1px solid #0078d7;
+  background-color: #e0ecff !important;
+  border: 1px solid #0078d7;
 }
 </style>
 
