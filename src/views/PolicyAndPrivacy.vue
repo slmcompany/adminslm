@@ -31,7 +31,7 @@ import { ref } from 'vue';
 import PrivacyLayout from '@/components/layouts/PrivacyLayout.vue';
 
 const title = ref('Chính Sách Quyền Riêng Tư');
-const lastUpdated = ref('Cập nhật lần cuối: Ngày 7 tháng 4 năm 2024');
+const lastUpdated = ref('Cập nhật lần cuối: Ngày 20 tháng 11 năm 2025');
 const appName = ref('Solarmax');
 const contactEmail = ref('sale@slmsolar.com');
 
