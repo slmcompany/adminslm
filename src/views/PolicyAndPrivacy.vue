@@ -1,6 +1,7 @@
 <template>
   <!-- Bỏ PrivacyLayout, dùng div thông thường -->
-  <div class="privacy-container" style="max-width: 900px; margin: 0 auto; padding: 40px 20px; background: #fff; min-height: 100vh;">
+  <div class="privacy-container"
+    style="max-width: 900px; margin: 0 auto; padding: 40px 20px; background: #fff; min-height: 100vh;">
     <h1 style="color: #2c3e50; font-size: 28px; margin-bottom: 10px;">{{ title }}</h1>
     <p style="font-style: italic; color: #7f8c8d; margin-bottom: 25px;">{{ lastUpdated }}</p>
 
@@ -46,16 +47,22 @@ const sections = ref([
             <li>Tên thiết bị (ví dụ: pin năng lượng mặt trời, bộ điều khiển)</li>
             <li>Ngày mua, ngày bắt đầu bảo hành, thời gian hết hạn bảo hành</li>
             <li>Thông tin đơn vị cung cấp (tùy chọn)</li>
-            <li><span style="font-weight: bold;">Vị trí địa lý</span> - để xác định vị trí lắp đặt thiết bị</li>
-            <li><span style="font-weight: bold;">Hình ảnh</span> - ảnh chụp thiết bị, biên nhận, hóa đơn từ máy ảnh hoặc bộ sưu tập ảnh của bạn</li>
+            <li><span class="highlight">Vị trí địa lý</span> - để xác định vị trí lắp đặt thiết bị và vị trí người dùng để có trải nghiệm sản phẩm tốt nhất</li>
+            <li><span class="highlight">Hình ảnh</span> - ảnh chụp thiết bị, biên nhận, hóa đơn từ máy ảnh hoặc bộ sưu tập ảnh của bạn</li>
         </ul>
-        <p>Tất cả dữ liệu này được <span style="font-weight: bold;">đồng bộ với máy chủ của chúng tôi để lưu trữ thông tin bảo hành</span>, không được chia sẻ cho bất kỳ bên thứ ba nào.</p>
+        <p>Tất cả dữ liệu này được <span class="highlight">đồng bộ với máy chủ của chúng tôi để lưu trữ thông tin bảo hành</span>, không được chia sẻ cho bất kỳ bên thứ ba nào.</p>
     `
   },
   {
-    title: 'Quyền truy cập của ứng dụng',
+    title: 'Cách chúng tôi sử dụng thông tin',
     content: `
-        <p>Ứng dụng không yêu cầu quyền truy cập vào vị trí, camera, micro, bộ nhớ ngoài hoặc bất kỳ dữ liệu nào khác trên thiết bị của bạn.</p>
+        <p>Chúng tôi sử dụng thông tin thu thập được để:</p>
+        <ul>
+            <li>Quản lý và theo dõi bảo hành thiết bị của bạn</li>
+            <li>Cung cấp dịch vụ hỗ trợ khách hàng hiệu quả</li>
+            <li>Cải thiện trải nghiệm người dùng và phát triển ứng dụng</li>
+            <li>Gửi thông báo quan trọng liên quan đến bảo hành hoặc cập nhật ứng dụng</li>
+        </ul>
     `
   },
   {
