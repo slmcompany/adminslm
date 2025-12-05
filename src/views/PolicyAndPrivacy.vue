@@ -1,5 +1,6 @@
 <template>
-  <PrivacyLayout>
+  <!-- Bỏ PrivacyLayout, dùng div thông thường -->
+  <div class="privacy-container" style="max-width: 900px; margin: 0 auto; padding: 40px 20px; background: #fff; min-height: 100vh;">
     <h1 style="color: #2c3e50; font-size: 28px; margin-bottom: 10px;">{{ title }}</h1>
     <p style="font-style: italic; color: #7f8c8d; margin-bottom: 25px;">{{ lastUpdated }}</p>
 
@@ -23,15 +24,16 @@
       </h2>
       <div v-html="contactSection.content"></div>
     </div>
-  </PrivacyLayout>
+  </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import PrivacyLayout from '@/components/layouts/PrivacyLayout.vue';
+// COMMENT dòng này:
+// import PrivacyLayout from '@/components/layouts/PrivacyLayout.vue';
 
 const title = ref('Chính Sách Quyền Riêng Tư');
-const lastUpdated = ref('Cập nhật lần cuối: Ngày 20 tháng 11 năm 2025');
+const lastUpdated = ref('Cập nhật lần cuối: Ngày 7 tháng 4 năm 2024');
 const appName = ref('Solarmax');
 const contactEmail = ref('sale@slmsolar.com');
 
@@ -44,10 +46,10 @@ const sections = ref([
             <li>Tên thiết bị (ví dụ: pin năng lượng mặt trời, bộ điều khiển)</li>
             <li>Ngày mua, ngày bắt đầu bảo hành, thời gian hết hạn bảo hành</li>
             <li>Thông tin đơn vị cung cấp (tùy chọn)</li>
-            <li><span class="highlight">Vị trí địa lý</span> - để xác định vị trí lắp đặt thiết bị</li>
-            <li><span class="highlight">Hình ảnh</span> - ảnh chụp thiết bị, biên nhận, hóa đơn từ máy ảnh hoặc bộ sưu tập ảnh của bạn</li>
+            <li><span style="font-weight: bold;">Vị trí địa lý</span> - để xác định vị trí lắp đặt thiết bị</li>
+            <li><span style="font-weight: bold;">Hình ảnh</span> - ảnh chụp thiết bị, biên nhận, hóa đơn từ máy ảnh hoặc bộ sưu tập ảnh của bạn</li>
         </ul>
-        <p>Tất cả dữ liệu này được <span class="highlight">đồng bộ với máy chủ của chúng tôi để lưu trữ thông tin bảo hành</span>, không được chia sẻ cho bất kỳ bên thứ ba nào.</p>
+        <p>Tất cả dữ liệu này được <span style="font-weight: bold;">đồng bộ với máy chủ của chúng tôi để lưu trữ thông tin bảo hành</span>, không được chia sẻ cho bất kỳ bên thứ ba nào.</p>
     `
   },
   {
@@ -59,7 +61,7 @@ const sections = ref([
   {
     title: 'Chia sẻ dữ liệu',
     content: `
-        <p>Chúng tôi <span class="highlight">không chia sẻ bất kỳ dữ liệu nào</span> của người dùng cho bên thứ ba.</p>
+        <p>Chúng tôi <span style="font-weight: bold;">không chia sẻ bất kỳ dữ liệu nào</span> của người dùng cho bên thứ ba.</p>
     `
   },
   {
@@ -77,7 +79,7 @@ const sections = ref([
   {
     title: 'Dành cho trẻ em',
     content: `
-        <p>Ứng dụng <span class="highlight">không dành cho trẻ em dưới 13 tuổi</span> và không thu thập thông tin cá nhân từ trẻ em.</p>
+        <p>Ứng dụng <span style="font-weight: bold;">không dành cho trẻ em dưới 13 tuổi</span> và không thu thập thông tin cá nhân từ trẻ em.</p>
     `
   },
   {
@@ -91,40 +93,18 @@ const sections = ref([
 const contactSection = ref({
   title: 'Liên hệ',
   content: `
-    <p>Nếu bạn có bất kỳ câu hỏi nào về chính sách này, vui lòng liên hệ chúng tôi qua email: <span class="highlight">${contactEmail.value} hoặc số điện thoại: 039 4307569</span></p>
+    <p>Nếu bạn có bất kỳ câu hỏi nào về chính sách này, vui lòng liên hệ chúng tôi qua email: <span style="font-weight: bold;">${contactEmail.value} hoặc số điện thoại: 039 4307569</span></p>
     `
 });
 </script>
 
-<style lang="css" scoped>
-/* Styles for content */
-h1 {
-  color: #2c3e50;
-  font-size: 28px;
-  margin-bottom: 10px;
-}
-
-h2 {
-  font-size: 22px;
-  color: #2c3e50;
-  margin-top: 25px;
-  margin-bottom: 15px;
-}
-
-ul {
+<style scoped>
+.privacy-container ul {
   padding-left: 20px;
+  list-style-type: disc;
 }
 
-li {
+.privacy-container li {
   margin-bottom: 8px;
-}
-
-.highlight {
-  font-weight: bold;
-}
-
-.section-number {
-  font-weight: bold;
-  margin-right: 8px;
 }
 </style>
