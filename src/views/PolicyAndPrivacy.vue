@@ -32,7 +32,7 @@ import PrivacyLayout from '@/components/layouts/PrivacyLayout.vue';
 
 const title = ref('Chính Sách Quyền Riêng Tư');
 const lastUpdated = ref('Cập nhật lần cuối: Ngày 7 tháng 4 năm 2024');
-const appName = ref('SLM App');
+const appName = ref('Solarmax');
 const contactEmail = ref('sale@slmsolar.com');
 
 const sections = ref([
